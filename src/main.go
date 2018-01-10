@@ -18,6 +18,7 @@ func main() {
 	/*登录,请求token*/
 	r.HandleFunc("/tokens", NewToken).Methods("POST")
 
+	adminRouter.HandleFunc("/docs/{id}", handler.AllDoc).Methods("GET")
 	adminRouter.HandleFunc("/docs", handler.NewDoc).Methods("POST")
 
 

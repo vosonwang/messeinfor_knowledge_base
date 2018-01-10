@@ -54,7 +54,6 @@ func ValidateToken(w http.ResponseWriter, r *http.Request, next http.HandlerFunc
 	}
 }
 
-
 func NewToken(w http.ResponseWriter, r *http.Request) {
 	user := models.ParseUser(r.Body)
 	if a, b := models.FindUser(user); b != false {
@@ -76,7 +75,7 @@ func NewToken(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			panic(err)
 		}
-		handler.JsonResponse(response, w)
+		handler.JsonResponse(w, response)
 
 	} else {
 		w.Header().Set("Content-Type", "application/json;   charset=UTF-8")

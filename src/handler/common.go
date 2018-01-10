@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 )
 
-func JsonResponse(response interface{}, w http.ResponseWriter) {
+func JsonResponse(w http.ResponseWriter, response interface{}) {
 	j, err := json.Marshal(response)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

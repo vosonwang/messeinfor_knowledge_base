@@ -6,7 +6,7 @@ const (
 	PgPort   = 32769
 	User     = "postgres"
 	Password = "qwe123"
-	Dbname   = "messeinfor_kownledge"
+	Dbname   = "messeinfor_knowledge"
 
 	Protocol  = "http://"
 	WebPort   = ":8300"
