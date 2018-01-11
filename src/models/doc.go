@@ -70,7 +70,7 @@ func DeleteDoc(doc Doc) bool {
 	return true
 }
 
-func UpdateDoc(doc Doc) (time.Time, error) {
+func UpdateDoc(doc  Doc) (time.Time, error) {
 	cst := doc.UpdatedAt //使用存进数据库之前的时间，作为返回前台的修改时间
 	if err := db.Save(&doc).Error; err != nil {
 		return cst, err

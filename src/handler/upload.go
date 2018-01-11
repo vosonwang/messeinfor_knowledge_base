@@ -10,6 +10,7 @@ import (
 	"strings"
 	"github.com/gorilla/mux"
 	"fmt"
+	"log"
 )
 
 func SaveImg(w http.ResponseWriter, r *http.Request) {
@@ -47,15 +48,17 @@ func GetImg(w http.ResponseWriter, r *http.Request) {
 }
 
 func SaveFile(w http.ResponseWriter, r *http.Request) {
-
-	a := conf.FilesPath + strings.Replace(r.Header.Get("id"), " ", "", -1) //去除文件名中的空格，以便配合前端mavon能够正常显示链接
+	fileName := strings.Replace(r.Header.Get("id"), " ", "", -1)
+	a := conf.FilesPath + fileName //去除文件名中的空格，以便配合前端mavon能够正常显示链接
 
 	var f *os.File
+
+	defer f.Close()
 
 	/*判断文件是否存在，如果存在则覆盖，没有则创建（没有考虑文件夹是否存在）*/
 	if Exists(a) {
 		if t, err := os.OpenFile(a, os.O_RDWR|os.O_CREATE, 0); err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			log.Print(err)
 			fmt.Fprint(w, "打开文件失败！")
 		} else {
 			f = t
@@ -63,36 +66,32 @@ func SaveFile(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 		if t, err := os.Create(a); err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			log.Print(err)
 			fmt.Fprint(w, "创建文件失败！")
 		} else {
 			f = t
 		}
-
 	}
 
 	if _, err := io.Copy(f, r.Body); err != nil {
+		log.Print(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "拷贝图像失败！")
+	} else {
+		JsonResponse(w, conf.Protocol+conf.Host+string(conf.WebPort)+"/"+a)
 	}
-
-	defer f.Close()
-	if err := r.Body.Close(); err != nil {
-		panic(err)
-	}
-
-	JsonResponse(w, conf.Protocol+conf.Host+string(conf.WebPort)+"/"+a)
 
 }
 
 func GetFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
-	if name, err := ioutil.ReadFile(conf.FilesPath + id); err != nil {
+	if file, err := ioutil.ReadFile(conf.FilesPath + id); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "获取文件失败！")
 	} else {
-		JsonResponse(w, name)
+		w.WriteHeader(http.StatusOK)
+		w.Write(file)
 	}
 
 }
