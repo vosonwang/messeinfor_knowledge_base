@@ -2,8 +2,6 @@ package models
 
 import (
 	"time"
-	"io"
-	"encoding/json"
 	"github.com/satori/go.uuid"
 )
 
@@ -20,20 +18,13 @@ func FindUser(user User) (User, bool) {
 
 	a := db.Where(user).Find(&user)
 
+	if a.Error != nil {
+		return User{}, false
+	}
 
 	if a.RowsAffected == 1 {
 		return user, true
 	}
 
 	return User{}, false
-}
-
-func ParseUser(body io.Reader) User {
-	var user User
-
-	if err := json.NewDecoder(body).Decode(&user); err != nil {
-		panic(err)
-	}
-
-	return user
 }

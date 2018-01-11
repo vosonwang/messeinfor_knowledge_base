@@ -11,6 +11,7 @@ import (
 	"messeinfor.com/messeinfor_knowledge_base/src/conf"
 	"messeinfor.com/messeinfor_knowledge_base/src/handler"
 	"github.com/satori/go.uuid"
+	"encoding/json"
 )
 
 type Token struct {
@@ -55,7 +56,11 @@ func ValidateToken(w http.ResponseWriter, r *http.Request, next http.HandlerFunc
 }
 
 func NewToken(w http.ResponseWriter, r *http.Request) {
-	user := models.ParseUser(r.Body)
+	var user models.User
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "无法解析用户信息！")
+	}
 	if a, b := models.FindUser(user); b != false {
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 			"exp": time.Now().Add(time.Hour * time.Duration(8)).Unix(), //8小时后过期
@@ -78,8 +83,7 @@ func NewToken(w http.ResponseWriter, r *http.Request) {
 		handler.JsonResponse(w, response)
 
 	} else {
-		w.Header().Set("Content-Type", "application/json;   charset=UTF-8")
-		fmt.Fprintln(w, 0)
+		handler.JsonResponse(w, "用户名密码错误！")
 	}
 
 }
