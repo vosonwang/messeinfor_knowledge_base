@@ -7,17 +7,7 @@ import (
 	"log"
 )
 
-type Node struct {
-	Id        uuid.UUID  `json:"id"`
-	Title     string     `json:"title"`
-	NodeKey   int        `json:"nodeKey" gorm:"auto_increment; primary_key; unique"`
-	Lang      int        `json:"lang"`
-	ParentId  uuid.UUID  `json:"parent_id"`
-	CreatedAt time.Time  `json:"created"`
-	UpdatedAt time.Time  `json:"updated"`
-	DeletedAt *time.Time `json:"deleted"`
-}
-
+/*TODO 由于是中英文双语，所以有id和lang 这种联名主键，因此更新时需要考虑语言*/
 type Doc struct {
 	Id        uuid.UUID  `json:"id"`
 	Title     string     `json:"title"`
@@ -30,22 +20,7 @@ type Doc struct {
 	DeletedAt *time.Time `json:"deleted"`
 }
 
-type Nodes []Node
 
-func (Node) TableName() string {
-	return "docs"
-}
-
-func FindNodes(lang int) (Nodes) {
-	var nodes Nodes
-	/*按照node_key排序，以便前端按照此顺序由上到下排列*/
-	if err := db.Where("lang = ?", lang).Order("node_key").Find(&nodes).Error; err == nil {
-		return nodes
-	} else {
-		fmt.Print(err)
-		return nil
-	}
-}
 
 func AddDoc(doc Doc) (uuid.UUID) {
 	doc.Id = uuid.NewV4()
@@ -70,7 +45,7 @@ func DeleteDoc(doc Doc) bool {
 	return true
 }
 
-func UpdateDoc(doc  Doc) (time.Time, error) {
+func UpdateDoc(doc Doc) (time.Time, error) {
 	cst := doc.UpdatedAt //使用存进数据库之前的时间，作为返回前台的修改时间
 	if err := db.Save(&doc).Error; err != nil {
 		return cst, err
@@ -78,17 +53,4 @@ func UpdateDoc(doc  Doc) (time.Time, error) {
 	return cst, nil
 }
 
-func Swap(a Doc, b Doc) error {
-	a.NodeKey, b.NodeKey = b.NodeKey, a.NodeKey
 
-	e := db.Save(&a).Error
-	f := db.Save(&b).Error
-	if e != nil {
-		return e
-	}
-	if f != nil {
-		return f
-	}
-	return nil
-
-}
