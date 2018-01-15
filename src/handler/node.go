@@ -3,17 +3,17 @@ package handler
 import (
 	"net/http"
 	"fmt"
-	"encoding/json"
 	"strconv"
-	"messeinfor.com/messeinfor_knowledge_base/src/models"
+	"messeinfor.com/messeinfor_knowledge_base/src/model"
 	"github.com/gorilla/mux"
+	"log"
+	"encoding/json"
 )
 
 func SwapNode(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
-	/*TODO 替换为FindNode*/
-	if down, err := models.FindDoc(id); err != nil {
+	if down, err := model.FindAlias(id); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "数据库报错，找不到文档！")
 	} else {
@@ -22,13 +22,13 @@ func SwapNode(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "无法解析节点")
 		} else {
-			if up, err := models.FindDoc(Map["id"]); err != nil {
+			if up, err := model.FindAlias(Map["id"]); err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Fprint(w, "数据库报错，找不到文档！")
 			} else {
-				if err := models.Swap(down, up); err != nil {
+				if err := model.SwapNode(down, up); err != false {
 					w.WriteHeader(http.StatusInternalServerError)
-					fmt.Fprint(w, "数据库报错，保存交换后的nodeKey失败！")
+					fmt.Fprint(w, "数据库报错，无法交换节点！")
 				} else {
 					JsonResponse(w, "交换成功！")
 				}
@@ -38,7 +38,8 @@ func SwapNode(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func GetNodes(w http.ResponseWriter, r *http.Request) {
+/*获取TOC所需要的所有节点*/
+func FindNodes(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
@@ -46,8 +47,12 @@ func GetNodes(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "参数不正确")
 	} else {
-		if Nodes := models.FindNodes(lang); Nodes != nil {
-			JsonResponse(w, Nodes)
+		if nodes, b := model.FindNodes(lang); b {
+			JsonResponse(w, nodes)
+		} else {
+			log.Print(nodes)
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, "获取节点失败")
 		}
 	}
 

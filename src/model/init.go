@@ -1,4 +1,4 @@
-package models
+package model
 
 import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -18,6 +18,9 @@ func init() {
 	if db, err = gorm.Open("postgres", pg); err != nil {
 		log.Print(err)
 	}
+
+	//set this to true, `User`'s default table name will be `user`, table name setted with `TableName` won't be affected
+	db.SingularTable(true)
 
 	db.LogMode(true)
 }

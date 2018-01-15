@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 	"github.com/go-redis/redis"
-	"messeinfor.com/messeinfor_knowledge_base/src/models"
+	"messeinfor.com/messeinfor_knowledge_base/src/model"
 	"messeinfor.com/messeinfor_knowledge_base/src/conf"
 	"messeinfor.com/messeinfor_knowledge_base/src/handler"
 	"github.com/satori/go.uuid"
@@ -56,12 +56,12 @@ func ValidateToken(w http.ResponseWriter, r *http.Request, next http.HandlerFunc
 }
 
 func NewToken(w http.ResponseWriter, r *http.Request) {
-	var user models.User
+	var user model.User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "无法解析用户信息！")
 	}
-	if a, b := models.FindUser(user); b != false {
+	if a, b := model.FindUser(user); b != false {
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 			"exp": time.Now().Add(time.Hour * time.Duration(8)).Unix(), //8小时后过期
 			"iat": time.Now().Unix(),

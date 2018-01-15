@@ -14,7 +14,6 @@ func init() {
 	log.SetPrefix("TRACE: ")
 	log.SetFlags(log.Ldate | log.Lmicroseconds | log.Llongfile)
 
-
 	/*Redis*/
 	client = redis.NewClient(&redis.Options{
 		Addr:     conf.Host + conf.Redis,
@@ -25,4 +24,5 @@ func init() {
 	if pong, err := client.Ping().Result(); err != nil {
 		fmt.Print(pong, err)
 	}
+
 }
