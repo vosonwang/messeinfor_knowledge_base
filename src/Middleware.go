@@ -61,7 +61,7 @@ func NewToken(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "无法解析用户信息！")
 	}
-	if a, b := model.FindUser(user); b != false {
+	if p := model.FindUser(user); p != nil {
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 			"exp": time.Now().Add(time.Hour * time.Duration(8)).Unix(), //8小时后过期
 			"iat": time.Now().Unix(),
@@ -74,7 +74,8 @@ func NewToken(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintln(w, "Error while signing the token")
 		}
 
-		response := Token{tokenString, a.Username, a.Id}
+
+		response := Token{tokenString, (*p).Username, (*p).Id}
 		/*如果在redis上未过期，则续命1小时*/
 		err = client.Set(user.Username, "", time.Hour).Err()
 		if err != nil {

@@ -8,13 +8,13 @@ type User struct {
 	Password string `json:"password"`
 }
 
-func FindUser(user User) (User, bool) {
+func FindUser(user User) (*User) {
 
 	a := db.Where(user).Find(&user)
 
 	if a.Error == nil && a.RowsAffected == 1 {
-		return user, true
+		return &user
 	}
 	log.Print(a.Error)
-	return User{}, false
+	return nil
 }

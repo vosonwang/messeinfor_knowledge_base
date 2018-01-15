@@ -16,11 +16,11 @@ func AddDoc(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "无法解析节点")
 	}
 
-	if doc, err := model.AddDoc(doc); err != nil {
+	if Point:= model.AddDoc(doc); Point == nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "数据库报错，无法添加文档")
 	} else {
-		JsonResponse(w, doc)
+		JsonResponse(w, *Point)
 	}
 }
 
@@ -28,11 +28,11 @@ func FindDoc(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	if doc, err := model.FindDoc(id); err != nil {
+	if point := model.FindDoc(id); point == nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "数据库报错，找不到文档！")
 	} else {
-		JsonResponse(w, doc)
+		JsonResponse(w, *point)
 	}
 }
 
@@ -53,11 +53,11 @@ func UpdateDoc(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "无法解析节点")
 	} else {
-		if doc, err := model.UpdateDoc(doc); err != nil {
+		if point := model.UpdateDoc(doc); point != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "数据库更新文档失败")
 		} else {
-			JsonResponse(w, doc)
+			JsonResponse(w, *point)
 		}
 	}
 }
@@ -66,11 +66,11 @@ func DeleteDoc(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	if doc, err := model.FindDoc(id); err != nil {
+	if point := model.FindDoc(id); point == nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "数据库报错，找不到文档！")
 	} else {
-		if model.DeleteDoc(doc) == false {
+		if model.DeleteDoc(*point) == false {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "数据库报错，无法删除！")
 		} else {

@@ -7,6 +7,7 @@ import (
 
 type Node struct {
 	Id       uuid.UUID `json:"id"`
+	Lang     int       `json:"lang"`
 	Title    string    `json:"title"`
 	ParentId uuid.UUID `json:"parent_id"`
 	NodeKey  int       `json:"nodeKey"`
@@ -16,21 +17,21 @@ type Node struct {
 type Nodes []Node
 
 /*获取所有节点*/
-func FindNodes(lang int) (Nodes, bool) {
+func FindNodes(lang int) (*Nodes, bool) {
 	var (
 		nodes Nodes
 		node  Node
 	)
-	if rows, err := db.Raw("SELECT d.id,d.title,d.parent_id,a.node_key,a.id FROM doc d INNER JOIN alias a ON d.alias_id=a.id WHERE d.deleted_at IS NULL AND  d.lang = ? ORDER BY a.node_key", lang).Rows(); err != nil {
+	if rows, err := db.Raw("SELECT d.id,d.title,d.parent_id,d.lang,a.node_key,a.id FROM doc d INNER JOIN alias a ON d.alias_id=a.id WHERE d.deleted_at IS NULL AND  d.lang = ? ORDER BY a.node_key", lang).Rows(); err != nil {
 		return nil, false
 	} else {
 		defer rows.Close()
 		for rows.Next() {
-			rows.Scan(&node.Id, &node.Title, &node.ParentId, &node.NodeKey, &node.AliasId)
+			rows.Scan(&node.Id, &node.Title, &node.ParentId,&node.Lang,&node.NodeKey, &node.AliasId)
 			nodes = append(nodes, node)
 		}
 	}
-	return nodes, true
+	return &nodes, true
 }
 
 func SwapNode(down Alias, up Alias) bool {
