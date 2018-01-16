@@ -9,14 +9,14 @@ import (
 	"github.com/satori/go.uuid"
 )
 
-func AddDoc(w http.ResponseWriter, r *http.Request) {
-	var doc model.Doc
-	if err := json.NewDecoder(r.Body).Decode(&doc); err != nil {
+func AddNode(w http.ResponseWriter, r *http.Request) {
+	var node model.Node
+	if err := json.NewDecoder(r.Body).Decode(&node); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "无法解析节点")
 	}
 
-	if Point:= model.AddDoc(doc); Point == nil {
+	if Point := model.AddNode(node); Point == nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "数据库报错，无法添加文档")
 	} else {
@@ -28,7 +28,7 @@ func FindDoc(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	if point := model.FindDoc(id); point == nil {
+	if point := model.FindDocAlias(id); point == nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "数据库报错，找不到文档！")
 	} else {
@@ -40,20 +40,20 @@ func UpdateDoc(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	var (
-		doc model.Doc
-		err error
+		docAlias model.DocAlias
+		err      error
 	)
 
-	if doc.Id, err = uuid.FromString(vars["id"]); err != nil {
+	if docAlias.Id, err = uuid.FromString(vars["id"]); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "Id格式错误")
 	}
 
-	if err := json.NewDecoder(r.Body).Decode(&doc); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&docAlias); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "无法解析节点")
 	} else {
-		if point := model.UpdateDoc(doc); point != nil {
+		if point := model.UpdateDocAlias(docAlias); point == nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "数据库更新文档失败")
 		} else {

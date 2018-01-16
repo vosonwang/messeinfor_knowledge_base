@@ -25,13 +25,13 @@ func main() {
 
 	/*获取所有文档和*/
 	adminRouter.HandleFunc("/docs/{id}", handler.FindNodes).Methods("GET")
+	/*添加文档*/
+	adminRouter.HandleFunc("/docs", handler.AddNode).Methods("POST")
 	//删除文档
 	adminRouter.HandleFunc("/docs/{id}", handler.DeleteDoc).Methods("DELETE")
 	//更新文档
 	adminRouter.HandleFunc("/docs/{id}", handler.UpdateDoc).Methods("PUT")
-	/*添加文档*/
-	adminRouter.HandleFunc("/docs", handler.AddDoc).Methods("POST")
-	//
+	//交换节点
 	adminRouter.HandleFunc("/alias/{id}", handler.SwapNode).Methods("PATCH")
 
 	adminRouter.HandleFunc("/images", handler.SaveImg).Methods("POST")
