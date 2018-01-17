@@ -63,19 +63,21 @@ func FindNodes(lang int) (*Nodes, bool) {
 }
 
 func SwapNode(down Alias, up Alias) bool {
-	down.NodeKey, up.NodeKey = up.NodeKey, down.NodeKey
+
 	tx := db.Begin()
 
-	if err := db.Save(&down).Error; err != nil {
+	if err := db.Exec("UPDATE alias SET node_key= ? WHERE id =?", up.NodeKey, down.Id).Error; err != nil {
+		tx.Rollback()
 		log.Print(err)
 		return false
 	}
 
-	if err := db.Save(&down).Error; err != nil {
+	if err := db.Exec("UPDATE alias SET node_key= ? WHERE id=?", down.NodeKey, up.Id).Error; err != nil {
+		tx.Rollback()
 		log.Print(err)
 		return false
 	}
 
 	tx.Commit()
-	return false
+	return true
 }

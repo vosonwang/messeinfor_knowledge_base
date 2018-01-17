@@ -38,8 +38,8 @@ func ValidateToken(w http.ResponseWriter, r *http.Request, next http.HandlerFunc
 			} else if err != nil {
 				panic(err)
 			} else {
-				/*如果在redis上未过期，则续命1小时*/
-				err = client.Set(username, "", time.Hour).Err()
+				/*如果在redis上未过期，则续命2小时*/
+				err = client.Set(username, "", 2*time.Hour).Err()
 				if err != nil {
 					panic(err)
 				}
@@ -63,7 +63,7 @@ func NewToken(w http.ResponseWriter, r *http.Request) {
 	}
 	if p := model.FindUser(user); p != nil {
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"exp": time.Now().Add(time.Hour * time.Duration(8)).Unix(), //8小时后过期
+			"exp": time.Now().Add(time.Hour * time.Duration(8)).Unix(), //token在8小时后过期
 			"iat": time.Now().Unix(),
 			"sub": user.Username,
 		})
@@ -76,8 +76,8 @@ func NewToken(w http.ResponseWriter, r *http.Request) {
 
 
 		response := Token{tokenString, (*p).Username, (*p).Id}
-		/*如果在redis上未过期，则续命1小时*/
-		err = client.Set(user.Username, "", time.Hour).Err()
+		/*在redis上设置token为2小时过期*/
+		err = client.Set(user.Username, "", 2*time.Hour).Err()
 		if err != nil {
 			panic(err)
 		}

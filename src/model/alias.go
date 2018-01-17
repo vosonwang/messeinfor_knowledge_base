@@ -1,6 +1,8 @@
 package model
 
-import "log"
+import (
+	"log"
+)
 
 /*别名表*/
 type Alias struct {
@@ -28,9 +30,12 @@ func FindAlias(id string) *Alias {
 
 func FindDocAlias(id string) (*DocAlias) {
 	var docA DocAlias
+
 	if err := db.Raw("SELECT d.*,a.name FROM doc d INNER JOIN alias a ON d.alias_id = a.id WHERE d.deleted_at IS NULL AND d.id = ?", id).Scan(&docA).Error; err != nil {
+		log.Print(err)
 		return nil
 	}
+
 	return &docA
 }
 
@@ -41,11 +46,10 @@ func UpdateDocAlias(docAlias DocAlias) (*DocAlias) {
 	)
 	doc = docAlias.Doc
 	alias.Id = docAlias.AliasId
-	alias.Name = docAlias.Name
 
 	tx := db.Begin()
 
-	if err := db.Save(&alias).Error; err != nil {
+	if err := db.Model(&alias).Update("name", docAlias.Name).Error; err != nil {
 		tx.Rollback()
 		log.Print(err)
 		return nil

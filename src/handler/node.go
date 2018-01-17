@@ -25,11 +25,11 @@ func SwapNode(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Fprint(w, "数据库报错，找不到文档！")
 			} else {
-				if err := model.SwapNode(*down, *up); err != false {
+				if err := model.SwapNode(*down, *up); err {
+					JsonResponse(w, "交换成功！")
+				} else {
 					w.WriteHeader(http.StatusInternalServerError)
 					fmt.Fprint(w, "数据库报错，无法交换节点！")
-				} else {
-					JsonResponse(w, "交换成功！")
 				}
 			}
 		}
