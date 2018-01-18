@@ -45,7 +45,7 @@ func AddNode(node Node) (*Node) {
 }
 
 /*获取所有节点*/
-func FindNodes(lang int) (*Nodes, bool) {
+func FindAllNodes(lang int) (*Nodes, bool) {
 	var (
 		nodes Nodes
 		node  Node

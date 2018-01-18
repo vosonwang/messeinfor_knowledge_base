@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"encoding/json"
 	"github.com/satori/go.uuid"
+	"strconv"
 )
 
 func AddNode(w http.ResponseWriter, r *http.Request) {
@@ -28,12 +29,27 @@ func FindDoc(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	if point := model.FindDocAlias(id); point == nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, "数据库报错，找不到文档！")
+	if uid, err := uuid.FromString(id); err != nil {
+		if lang, err := strconv.Atoi(r.Header.Get("id")); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, "语言参数不正确")
+		} else {
+			if point := model.FindDocByName(id, lang); point == nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprint(w, "找不到文档！")
+			} else {
+				JsonResponse(w, *point)
+			}
+		}
 	} else {
-		JsonResponse(w, *point)
+		if point := model.FindDocAlias(uid); point == nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, "数据库报错，找不到文档！")
+		} else {
+			JsonResponse(w, *point)
+		}
 	}
+
 }
 
 func UpdateDoc(w http.ResponseWriter, r *http.Request) {

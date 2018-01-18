@@ -2,6 +2,7 @@ package model
 
 import (
 	"log"
+	"github.com/satori/go.uuid"
 )
 
 /*别名表*/
@@ -28,7 +29,7 @@ func FindAlias(id string) *Alias {
 	return &alias
 }
 
-func FindDocAlias(id string) (*DocAlias) {
+func FindDocAlias(id uuid.UUID) (*DocAlias) {
 	var docA DocAlias
 
 	if err := db.Raw("SELECT d.*,a.name FROM doc d INNER JOIN alias a ON d.alias_id = a.id WHERE d.deleted_at IS NULL AND d.id = ?", id).Scan(&docA).Error; err != nil {

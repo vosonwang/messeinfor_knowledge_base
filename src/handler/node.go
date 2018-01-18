@@ -38,7 +38,7 @@ func SwapNode(w http.ResponseWriter, r *http.Request) {
 }
 
 /*获取TOC所需要的所有节点*/
-func FindNodes(w http.ResponseWriter, r *http.Request) {
+func GetAllNodes(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
@@ -46,7 +46,7 @@ func FindNodes(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "参数不正确")
 	} else {
-		if p, b := model.FindNodes(lang); b {
+		if p, b := model.FindAllNodes(lang); b {
 			JsonResponse(w, *p)
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)

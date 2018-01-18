@@ -6,7 +6,16 @@ import (
 	"messeinfor.com/messeinfor_knowledge_base/src/conf"
 	"github.com/jinzhu/gorm"
 	"log"
+	"github.com/satori/go.uuid"
+	"time"
 )
+
+type Base struct {
+	Id        uuid.UUID  `json:"id"`
+	CreatedAt time.Time  `json:"created"`
+	UpdatedAt time.Time  `json:"updated"`
+	DeletedAt *time.Time `json:"deleted"`
+}
 
 var db *gorm.DB
 

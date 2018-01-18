@@ -48,8 +48,9 @@ func GetImg(w http.ResponseWriter, r *http.Request) {
 }
 
 func SaveFile(w http.ResponseWriter, r *http.Request) {
+	//去除文件名中的空格，以便配合前端mavon能够正常显示链接
 	fileName := strings.Replace(r.Header.Get("id"), " ", "", -1)
-	a := conf.FilesPath + fileName //去除文件名中的空格，以便配合前端mavon能够正常显示链接
+	a := conf.FilesPath + fileName
 
 	var f *os.File
 

@@ -24,7 +24,7 @@ func main() {
 	r.HandleFunc("/upload/files/{id}", handler.GetFile).Methods("GET")
 
 	/*获取所有文档和*/
-	adminRouter.HandleFunc("/docs/{id}", handler.FindNodes).Methods("GET")
+	adminRouter.HandleFunc("/docs/{id}", handler.GetAllNodes).Methods("GET")
 	/*添加文档*/
 	adminRouter.HandleFunc("/docs", handler.AddNode).Methods("POST")
 	//删除文档
