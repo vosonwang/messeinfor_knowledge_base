@@ -2,56 +2,50 @@ package handler
 
 import (
 	"net/http"
-	"fmt"
-	"strconv"
 	"messeinfor.com/messeinfor_knowledge_base/src/model"
 	"github.com/gorilla/mux"
-	"encoding/json"
+	"strconv"
+	"fmt"
 )
 
-func SwapNode(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
-	if down := model.FindAlias(id); down == nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, "数据库报错，找不到文档！")
-	} else {
-		var Map map[string]string
-		if err := json.NewDecoder(r.Body).Decode(&Map); err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "无法解析节点")
-		} else {
-			if up := model.FindAlias(Map["id"]); up == nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				fmt.Fprint(w, "数据库报错，找不到文档！")
-			} else {
-				if err := model.SwapNode(*down, *up); err {
-					JsonResponse(w, "交换成功！")
-				} else {
-					w.WriteHeader(http.StatusInternalServerError)
-					fmt.Fprint(w, "数据库报错，无法交换节点！")
-				}
-			}
-		}
-	}
-
-}
+//func SwapNode(w http.ResponseWriter, r *http.Request) {
+//	vars := mux.Vars(r)
+//	id := vars["id"]
+//	if down := model.FindAlias(id); down == nil {
+//		w.WriteHeader(http.StatusInternalServerError)
+//		fmt.Fprint(w, "数据库报错，找不到文档！")
+//	} else {
+//		var Map map[string]string
+//		if err := json.NewDecoder(r.Body).Decode(&Map); err != nil {
+//			w.WriteHeader(http.StatusInternalServerError)
+//			fmt.Fprint(w, "无法解析节点")
+//		} else {
+//			if up := model.FindAlias(Map["id"]); up == nil {
+//				w.WriteHeader(http.StatusInternalServerError)
+//				fmt.Fprint(w, "数据库报错，找不到文档！")
+//			} else {
+//				if err := model.SwapNode(*down, *up); err {
+//					JsonResponse(w, "交换成功！")
+//				} else {
+//					w.WriteHeader(http.StatusInternalServerError)
+//					fmt.Fprint(w, "数据库报错，无法交换节点！")
+//				}
+//			}
+//		}
+//	}
+//
+//}
 
 /*获取TOC所需要的所有节点*/
 func GetAllNodes(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["id"]
 
-	if lang, err := strconv.Atoi(id); err != nil {
+	if lang, err := strconv.Atoi(vars["lang"]); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, "参数不正确")
+		fmt.Fprint(w, "语言参数不正确")
 	} else {
-		if p, b := model.FindAllNodes(lang); b {
-			JsonResponse(w, *p)
-		} else {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "获取节点失败")
-		}
+		p := model.FindAllNodes(lang)
+		JsonResponse(w, &p)
 	}
 
 }

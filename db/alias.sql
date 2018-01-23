@@ -1,7 +1,7 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : postgres
+ Source Server         : pg 10.1
  Source Server Type    : PostgreSQL
  Source Server Version : 100000
  Source Host           : localhost:32769
@@ -12,7 +12,7 @@
  Target Server Version : 100000
  File Encoding         : 65001
 
- Date: 15/01/2018 19:01:11
+ Date: 23/01/2018 16:53:28
 */
 
 
@@ -26,7 +26,8 @@ CREATE TABLE "alias" (
   "created_at" timestamp(6) DEFAULT NULL,
   "updated_at" timestamp(6) DEFAULT NULL,
   "deleted_at" timestamp(6) DEFAULT NULL,
-  "node_key" int4 NOT NULL DEFAULT nextval('alias_node_key_seq'::regclass)
+  "description" varchar(50) COLLATE "pg_catalog"."default" DEFAULT NULL,
+  "parent_id" varchar(36) COLLATE "pg_catalog"."default" DEFAULT NULL
 )
 ;
 ALTER TABLE "alias" OWNER TO "postgres";

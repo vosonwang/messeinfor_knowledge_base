@@ -3,20 +3,92 @@ package model
 import (
 	"github.com/satori/go.uuid"
 	"log"
+	"github.com/jinzhu/gorm"
 )
 
 type Doc struct {
 	Base
+	Number   int       `json:"number" gorm:"AUTO_INCREMENT;default:0"`
 	Lang     int       `json:"lang"`
 	Text     string    `json:"text"`
 	Title    string    `json:"title"`
 	ParentId uuid.UUID `json:"parent_id"`
-	AliasId  uuid.UUID `json:"alias_id"`
+	Creator  uuid.UUID `json:"creator"`
+	Updater  uuid.UUID `json:"updater"`
+}
+
+type Data struct {
+	Doc
+	DocAliasID uuid.UUID `json:"doc_alias_id"`
+	AliasId    uuid.UUID `json:"alias_id"`
+}
+
+func (doc *Doc) BeforeCreate(scope *gorm.Scope) error {
+	scope.SetColumn("ID", uuid.NewV4())
+	return nil
+}
+
+func NewDoc(data Data) *Data {
+
+	var docAlias DocAlias
+
+	docAlias.Id = data.DocAliasID
+	docAlias.AliasId = data.AliasId
+
+	tx := db.Begin()
+
+	if db.NewRecord(data.Doc) {
+		if err := tx.Create(&data.Doc).Error; err != nil {
+			log.Print(err)
+			tx.Rollback()
+			return nil
+		}
+	} else {
+		if err := tx.Save(&data.Doc).Error; err != nil {
+			log.Print(err)
+			tx.Rollback()
+			return nil
+		}
+	}
+
+	docAlias.DocId = data.Doc.Id
+
+	if docAlias.AliasId != uuid.Nil {
+		if db.NewRecord(docAlias) {
+			if err := tx.Create(&docAlias).Error; err != nil {
+				log.Print(err)
+				tx.Rollback()
+				return nil
+			}
+		} else {
+			if err := tx.Save(&docAlias).Error; err != nil {
+				log.Print(err)
+				tx.Rollback()
+				return nil
+			}
+		}
+	}
+
+	data.DocAliasID = docAlias.Id
+
+	tx.Commit()
+
+	return &data
 }
 
 func FindDoc(id string) (*Doc) {
 	var doc Doc
 	if err := db.First(&doc, "id=?", id).Error; err != nil {
+		log.Print(err)
+		return nil
+	}
+	return &doc
+}
+
+func FindDocByAlias(aliasId string, lang int) *Doc {
+	var doc Doc
+
+	if err := db.First(&doc, "alias_id=? AND  lang =? ", aliasId, lang).Error; err != nil {
 		log.Print(err)
 		return nil
 	}
@@ -35,12 +107,8 @@ func FindDocByName(name string, lang int) (*Doc) {
 	}
 
 	//再根据alias_id和lang查出doc的id
-	d := db.First(&doc, "alias_id=? AND  lang =? ", alias.Id, lang)
-	if d.RowsAffected == 0 {
-		return &doc
-	}
 
-	if err := d.Error; err != nil {
+	if err := db.First(&doc, "alias_id=? AND  lang =? ", alias.Id, lang).Error; err != nil {
 		log.Print(err)
 		return nil
 	}
@@ -50,7 +118,6 @@ func FindDocByName(name string, lang int) (*Doc) {
 
 func DeleteDoc(doc Doc) bool {
 	var alias Alias
-	alias.Id = doc.AliasId
 
 	tx := db.Begin()
 

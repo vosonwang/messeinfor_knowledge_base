@@ -17,6 +17,8 @@ type Base struct {
 	DeletedAt *time.Time `json:"deleted"`
 }
 
+
+
 var db *gorm.DB
 
 func init() {

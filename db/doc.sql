@@ -1,7 +1,7 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : postgres
+ Source Server         : pg 10.1
  Source Server Type    : PostgreSQL
  Source Server Version : 100000
  Source Host           : localhost:32769
@@ -12,7 +12,7 @@
  Target Server Version : 100000
  File Encoding         : 65001
 
- Date: 15/01/2018 19:01:20
+ Date: 23/01/2018 16:53:54
 */
 
 
@@ -29,7 +29,9 @@ CREATE TABLE "doc" (
   "updated_at" timestamp(6) DEFAULT NULL,
   "deleted_at" timestamp(6) DEFAULT NULL,
   "parent_id" varchar(36) COLLATE "pg_catalog"."default" NOT NULL DEFAULT NULL,
-  "alias_id" varchar(36) COLLATE "pg_catalog"."default" NOT NULL DEFAULT NULL
+  "number" int4 DEFAULT nextval('doc_number_seq'::regclass),
+  "creator" varchar(36) COLLATE "pg_catalog"."default" DEFAULT NULL,
+  "updater" varchar(36) COLLATE "pg_catalog"."default" DEFAULT NULL
 )
 ;
 ALTER TABLE "doc" OWNER TO "postgres";
@@ -49,4 +51,5 @@ ALTER TABLE "doc" ADD CONSTRAINT "docs_id_pk" PRIMARY KEY ("id");
 -- ----------------------------
 -- Foreign Keys structure for table doc
 -- ----------------------------
-ALTER TABLE "doc" ADD CONSTRAINT "doc_alias_id_fk" FOREIGN KEY ("alias_id") REFERENCES "alias" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "doc" ADD CONSTRAINT "doc_creater_user_id_fk" FOREIGN KEY ("creator") REFERENCES "user" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "doc" ADD CONSTRAINT "doc_updater_user_id_fk" FOREIGN KEY ("updater") REFERENCES "user" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
