@@ -9,6 +9,7 @@ import (
 /*别名表*/
 type Alias struct {
 	Base
+	Number      int       `json:"number" gorm:"AUTO_INCREMENT;default:0"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 	ParentId    uuid.UUID `json:"parent_id"`
@@ -38,34 +39,33 @@ func NewAlias(alias Alias) *Alias {
 	return &alias
 }
 
-func FindAllAlias() *Aliases {
-	var aliases Aliases
-	if err := db.Find(&aliases).Error; err != nil {
+
+func FindAlias(id string) (*Alias) {
+	var a Alias
+	if err := db.First(&a, "id=?", id).Error; err != nil {
 		log.Print(err)
 		return nil
+	}
+	return &a
+}
+
+/*查询和描述相关的，所有未使用的别名列表*/
+func FindAliasByDesc(description string) *Aliases {
+
+	var aliases Aliases
+	if rows, err := db.Raw("select a.* from alias a LEFT JOIN doc d on a.id=d.alias_id WHERE a.deleted_at IS NULL AND d.id is NULL AND a.description LIKE ?","%"+description+"%").Rows(); err != nil {
+		log.Print(err)
+		return nil
+	} else {
+		for rows.Next() {
+			var a Alias
+			db.ScanRows(rows, &a)
+			aliases = append(aliases, a)
+		}
 	}
 	return &aliases
 }
 
-func FindAlias(id string) *Alias {
-	var alias Alias
-	if err := db.First(&alias, "id=?", id).Error; err != nil {
-		log.Print(err)
-		return nil
-	}
-	return &alias
-}
-
-func FindDocAlias(id string) (*DocAlias) {
-	var docA DocAlias
-
-	if err := db.Raw("SELECT * from doc where id = ?", id).Scan(&docA).Error; err != nil {
-		log.Print(err)
-		return nil
-	}
-
-	return &docA
-}
 
 //func UpdateDocAlias(docAlias DocAlias) (*DocAlias) {
 //	var (

@@ -12,15 +12,10 @@ type Doc struct {
 	Lang     int       `json:"lang"`
 	Text     string    `json:"text"`
 	Title    string    `json:"title"`
+	AliasID  uuid.UUID `json:"alias_id"`
 	ParentId uuid.UUID `json:"parent_id"`
 	Creator  uuid.UUID `json:"creator"`
 	Updater  uuid.UUID `json:"updater"`
-}
-
-type Data struct {
-	Doc
-	DocAliasID uuid.UUID `json:"doc_alias_id"`
-	AliasId    uuid.UUID `json:"alias_id"`
 }
 
 func (doc *Doc) BeforeCreate(scope *gorm.Scope) error {
@@ -28,52 +23,19 @@ func (doc *Doc) BeforeCreate(scope *gorm.Scope) error {
 	return nil
 }
 
-func NewDoc(data Data) *Data {
-
-	var docAlias DocAlias
-
-	docAlias.Id = data.DocAliasID
-	docAlias.AliasId = data.AliasId
-
-	tx := db.Begin()
-
-	if db.NewRecord(data.Doc) {
-		if err := tx.Create(&data.Doc).Error; err != nil {
+func NewDoc(doc Doc) *Doc {
+	if db.NewRecord(doc) {
+		if err := db.Create(&doc).Error; err != nil {
 			log.Print(err)
-			tx.Rollback()
 			return nil
 		}
 	} else {
-		if err := tx.Save(&data.Doc).Error; err != nil {
+		if err := db.Save(&doc).Error; err != nil {
 			log.Print(err)
-			tx.Rollback()
 			return nil
 		}
 	}
-
-	docAlias.DocId = data.Doc.Id
-
-	if docAlias.AliasId != uuid.Nil {
-		if db.NewRecord(docAlias) {
-			if err := tx.Create(&docAlias).Error; err != nil {
-				log.Print(err)
-				tx.Rollback()
-				return nil
-			}
-		} else {
-			if err := tx.Save(&docAlias).Error; err != nil {
-				log.Print(err)
-				tx.Rollback()
-				return nil
-			}
-		}
-	}
-
-	data.DocAliasID = docAlias.Id
-
-	tx.Commit()
-
-	return &data
+	return &doc
 }
 
 func FindDoc(id string) (*Doc) {
@@ -117,17 +79,14 @@ func FindDocByName(name string, lang int) (*Doc) {
 }
 
 func DeleteDoc(doc Doc) bool {
-	var alias Alias
-
 	tx := db.Begin()
-
 	if err := tx.Delete(&doc).Error; err != nil {
 		tx.Rollback()
 		log.Print(err)
 		return false
 	}
 
-	if err := tx.Delete(&alias).Error; err != nil {
+	if err := tx.Exec("update doc set alias_id = null where alias_id = ?", doc.AliasID).Error; err != nil {
 		tx.Rollback()
 		log.Print(err)
 		return false

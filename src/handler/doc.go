@@ -10,16 +10,16 @@ import (
 )
 
 func AddDoc(w http.ResponseWriter, r *http.Request) {
-	var data model.Data
-	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+	var doc model.Doc
+	if err := json.NewDecoder(r.Body).Decode(&doc); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "无法解析节点")
 	} else {
-		if Point := model.NewDoc(data); Point == nil {
+		if p := model.NewDoc(doc); p != nil {
+			JsonResponse(w, *p)
+		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "数据库:	无法添加文档")
-		} else {
-			JsonResponse(w, *Point)
 		}
 	}
 }

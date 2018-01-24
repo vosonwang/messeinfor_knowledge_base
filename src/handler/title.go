@@ -15,7 +15,7 @@ func FindTitle(w http.ResponseWriter, r *http.Request) {
 	} else {
 		if Point := model.FindTitles(title); Point == nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "数据库:	无法添加文档")
+			fmt.Fprint(w, "数据库:	查找文档标题失败")
 		} else {
 			JsonResponse(w, *Point)
 		}

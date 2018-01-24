@@ -10,13 +10,10 @@ type Title struct {
 
 type Titles []Title
 
-func (Title) TableName() string {
-	return "doc"
-}
-
+//根据语言查询和标题接近，并且未被占用的别名
 func FindTitles(title Title) *Titles {
 	var titles Titles
-	if rows, err := db.Raw("select id,title from doc where deleted_at is null AND lang = ? AND title LIKE  ? AND id not in (select doc_id from doc_alias where deleted_at is null)", title.Lang, "%"+title.Title+"%").Rows(); err != nil {
+	if rows, err := db.Raw("SELECT d1.id, d1.title FROM doc d1 WHERE d1.deleted_at IS NULL AND d1.lang = ? AND d1.title LIKE ? AND d1.alias_id IS NULL", title.Lang, "%"+title.Title+"%").Rows(); err != nil {
 		log.Print(err)
 		return nil
 	} else {
