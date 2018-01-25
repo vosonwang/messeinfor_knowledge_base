@@ -3,10 +3,12 @@ package conf
 const (
 	Host = "localhost"
 
-	PgPort   = 32769
-	User     = "postgres"
-	Password = "qwe123"
-	Dbname   = "messeinfor_knowledge"
+	PgHost = "172.17.0.2"
+	PgPort   = 5432
+	User     = "messeinfor"
+	Password = "messeinfor080124"
+	Dbname   = "mkb"
+
 
 	Protocol  = "http://"
 	WebPort   = ":8300"
@@ -15,5 +17,6 @@ const (
 
 	SecretKey = "messeinfor.com"
 
-	Redis= ":32768"
+	RedisHost="172.17.0.5"
+	Redis= ":6379"
 )

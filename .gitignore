@@ -1,6 +1,6 @@
 .DS_Store
 vendor
-out
+bin
 pkg
 upload
 

@@ -12,7 +12,7 @@
  Target Server Version : 100000
  File Encoding         : 65001
 
- Date: 23/01/2018 16:53:28
+ Date: 25/01/2018 17:16:45
 */
 
 
@@ -27,15 +27,16 @@ CREATE TABLE "alias" (
   "updated_at" timestamp(6) DEFAULT NULL,
   "deleted_at" timestamp(6) DEFAULT NULL,
   "description" varchar(50) COLLATE "pg_catalog"."default" DEFAULT NULL,
-  "parent_id" varchar(36) COLLATE "pg_catalog"."default" DEFAULT NULL
+  "parent_id" varchar(36) COLLATE "pg_catalog"."default" DEFAULT NULL,
+  "number" int4 DEFAULT nextval('alias_number_seq'::regclass)
 )
 ;
-ALTER TABLE "alias" OWNER TO "postgres";
+ALTER TABLE "alias" OWNER TO "messeinfor";
 
 -- ----------------------------
 -- Indexes structure for table alias
 -- ----------------------------
-CREATE UNIQUE INDEX "alias_id_uindex" ON "alias" USING btree (
+CREATE UNIQUE INDEX CONCURRENTLY "alias_id_uindex" ON "alias" USING btree (
   "id" COLLATE "pg_catalog"."default" "pg_catalog"."text_ops" ASC NULLS LAST
 );
 

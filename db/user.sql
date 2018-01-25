@@ -29,7 +29,7 @@ CREATE TABLE "user" (
   "deleted_at" timestamp(6) DEFAULT NULL
 )
 ;
-ALTER TABLE "user" OWNER TO "postgres";
+ALTER TABLE "user" OWNER TO "messeinfor";
 
 -- ----------------------------
 -- Records of user

@@ -12,7 +12,7 @@
  Target Server Version : 100000
  File Encoding         : 65001
 
- Date: 23/01/2018 16:53:54
+ Date: 25/01/2018 17:17:11
 */
 
 
@@ -31,15 +31,16 @@ CREATE TABLE "doc" (
   "parent_id" varchar(36) COLLATE "pg_catalog"."default" NOT NULL DEFAULT NULL,
   "number" int4 DEFAULT nextval('doc_number_seq'::regclass),
   "creator" varchar(36) COLLATE "pg_catalog"."default" DEFAULT NULL,
-  "updater" varchar(36) COLLATE "pg_catalog"."default" DEFAULT NULL
+  "updater" varchar(36) COLLATE "pg_catalog"."default" DEFAULT NULL,
+  "alias_id" varchar(36) COLLATE "pg_catalog"."default" DEFAULT NULL
 )
 ;
-ALTER TABLE "doc" OWNER TO "postgres";
+ALTER TABLE "doc" OWNER TO "messeinfor";
 
 -- ----------------------------
 -- Indexes structure for table doc
 -- ----------------------------
-CREATE UNIQUE INDEX CONCURRENTLY "docs_id_uindex" ON "doc" USING btree (
+CREATE UNIQUE INDEX "docs_id_uindex" ON "doc" USING btree (
   "id" COLLATE "pg_catalog"."default" "pg_catalog"."text_ops" ASC NULLS LAST
 );
 
