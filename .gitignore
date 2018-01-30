@@ -3,6 +3,7 @@ vendor
 bin
 pkg
 upload
+prod.json
 
 # Editor directories and files
 .idea
