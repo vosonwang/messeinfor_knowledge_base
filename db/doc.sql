@@ -29,7 +29,7 @@ CREATE TABLE "doc" (
   "updated_at" timestamp(6) DEFAULT NULL,
   "deleted_at" timestamp(6) DEFAULT NULL,
   "parent_id" varchar(36) COLLATE "pg_catalog"."default" NOT NULL DEFAULT NULL,
-  "number" int4 DEFAULT nextval('doc_number_seq'::regclass),
+  "number" int4 DEFAULT NULL,
   "creator" varchar(36) COLLATE "pg_catalog"."default" DEFAULT NULL,
   "updater" varchar(36) COLLATE "pg_catalog"."default" DEFAULT NULL,
   "alias_id" varchar(36) COLLATE "pg_catalog"."default" DEFAULT NULL

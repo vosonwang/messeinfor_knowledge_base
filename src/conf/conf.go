@@ -1,22 +1,90 @@
 package conf
 
-const (
-	Host = "localhost"
-
-	PgHost = "172.17.0.2"
-	PgPort   = 5432
-	User     = "messeinfor"
-	Password = "messeinfor080124"
-	Dbname   = "mkb"
-
-
-	Protocol  = "http://"
-	WebPort   = ":8300"
-	ImagePath = "upload/images/"  /*文件路径前不能加 / */
-	FilesPath = "upload/files/"
-
-	SecretKey = "messeinfor.com"
-
-	RedisHost="172.17.0.5"
-	Redis= ":6379"
+import (
+	"io/ioutil"
+	"fmt"
+	"encoding/json"
+	"github.com/tidwall/gjson"
 )
+
+type Base struct {
+	Debug     bool
+	Host      string `json:"Host,omitempty"`
+	SecretKey string
+	Protocol  string
+	Port      string
+	ImagePath string
+	FilesPath string
+}
+
+type Pg struct {
+	Host     string
+	Port     int `json:"Port,int"`
+	User     string
+	Password string
+	Db       string
+}
+
+type Redis struct {
+	Host string
+	Port string
+}
+
+type Config struct {
+	Base
+	Pg
+	Redis
+}
+
+var X Config
+
+func init() {
+	byteConf, err := ioutil.ReadFile("src/conf/base.json")
+
+	if err != nil {
+		fmt.Print(err)
+	}
+
+	var (
+		base  Base
+		redis Redis
+		pg    Pg
+	)
+
+	b := gjson.GetBytes(byteConf, "base")
+	json.Unmarshal([]byte(b.Raw), &base)
+
+	if base.Debug {
+		if byteDev, err := ioutil.ReadFile("src/conf/dev.json"); err != nil {
+			fmt.Print(err)
+		} else {
+			d := gjson.GetBytes(byteDev, "Dev.Host")
+			json.Unmarshal([]byte(d.Raw), &base.Host)
+
+			r := gjson.GetBytes(byteDev, "Dev.Redis")
+			json.Unmarshal([]byte(r.Raw), &redis)
+
+			p := gjson.GetBytes(byteDev, "Dev.Pg")
+			json.Unmarshal([]byte(p.Raw), &pg)
+
+		}
+
+	} else {
+		if byteProd, err := ioutil.ReadFile("src/conf/prod.json"); err != nil {
+			fmt.Print(err)
+		} else {
+			d := gjson.GetBytes(byteProd, "Prod.Host")
+			json.Unmarshal([]byte(d.Raw), &base.Host)
+
+			r := gjson.GetBytes(byteProd, "Prod.Redis")
+			json.Unmarshal([]byte(r.Raw), &redis)
+
+			p := gjson.GetBytes(byteProd, "Prod.Pg")
+			json.Unmarshal([]byte(p.Raw), &pg)
+
+		}
+	}
+
+	X = Config{base, pg, redis}
+
+}

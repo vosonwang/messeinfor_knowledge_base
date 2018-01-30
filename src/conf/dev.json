@@ -1,0 +1,17 @@
+{
+  "Dev": {
+    "Host": "localhost",
+    "SecretKey":"messeinfor.com",
+    "Redis": {
+      "Host": "localhost",
+      "Port": ":32768"
+    },
+    "Pg": {
+      "Host": "localhost",
+      "Port": 32769,
+      "User": "postgres",
+      "Password": "qwe123",
+      "Db": "messeinfor_knowledge"
+    }
+  }
+}

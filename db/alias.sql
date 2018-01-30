@@ -28,7 +28,7 @@ CREATE TABLE "alias" (
   "deleted_at" timestamp(6) DEFAULT NULL,
   "description" varchar(50) COLLATE "pg_catalog"."default" DEFAULT NULL,
   "parent_id" varchar(36) COLLATE "pg_catalog"."default" DEFAULT NULL,
-  "number" int4 DEFAULT nextval('alias_number_seq'::regclass)
+  "number" int4 DEFAULT NULL
 )
 ;
 ALTER TABLE "alias" OWNER TO "messeinfor";

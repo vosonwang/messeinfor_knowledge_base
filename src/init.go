@@ -9,14 +9,18 @@ import (
 
 var client *redis.Client
 
+
+
 func init() {
 	/*Log*/
 	log.SetPrefix("TRACE: ")
 	log.SetFlags(log.Ldate | log.Lmicroseconds | log.Llongfile)
 
+
+
 	/*Redis*/
 	client = redis.NewClient(&redis.Options{
-		Addr:     conf.RedisHost + conf.Redis,
+		Addr:      conf.X.Redis.Host+ conf.X.Redis.Port,
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})

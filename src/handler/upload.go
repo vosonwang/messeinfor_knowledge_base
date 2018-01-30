@@ -15,7 +15,7 @@ import (
 
 func SaveImg(w http.ResponseWriter, r *http.Request) {
 
-	a := conf.ImagePath + time.Now().Format("2006-01-02_15-04-05")
+	a := conf.X.Base.ImagePath + time.Now().Format("2006-01-02_15-04-05")
 
 	if f, err := os.Create(a); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -28,7 +28,7 @@ func SaveImg(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, "拷贝图像失败！")
 		}
 
-		JsonResponse(w, conf.Protocol+conf.Host+string(conf.WebPort)+"/"+a)
+		JsonResponse(w, conf.X.Base.Protocol+conf.X.Base.Host+"/"+a)
 
 	}
 
@@ -37,7 +37,7 @@ func SaveImg(w http.ResponseWriter, r *http.Request) {
 func GetImg(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
-	if imgByte, err := ioutil.ReadFile(conf.ImagePath + id); err != nil {
+	if imgByte, err := ioutil.ReadFile(conf.X.Base.ImagePath + id); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "读取图像失败！")
 	} else {
@@ -50,7 +50,7 @@ func GetImg(w http.ResponseWriter, r *http.Request) {
 func SaveFile(w http.ResponseWriter, r *http.Request) {
 	//去除文件名中的空格，以便配合前端mavon能够正常显示链接
 	fileName := strings.Replace(r.Header.Get("id"), " ", "", -1)
-	a := conf.FilesPath + fileName
+	a := conf.X.Base.FilesPath + fileName
 
 	var f *os.File
 
@@ -79,7 +79,7 @@ func SaveFile(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "拷贝图像失败！")
 	} else {
-		JsonResponse(w, conf.Protocol+conf.Host+string(conf.WebPort)+"/"+a)
+		JsonResponse(w, conf.X.Base.Protocol+conf.X.Base.Host+"/"+a)
 	}
 
 }
@@ -87,7 +87,7 @@ func SaveFile(w http.ResponseWriter, r *http.Request) {
 func GetFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
-	if file, err := ioutil.ReadFile(conf.FilesPath + id); err != nil {
+	if file, err := ioutil.ReadFile(conf.X.Base.FilesPath + id); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "获取文件失败！")
 	} else {

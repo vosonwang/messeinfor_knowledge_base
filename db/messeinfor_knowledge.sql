@@ -1,1 +1,1 @@
-CREATE DATABASE messeinfor_knowledge;
+CREATE DATABASE mkb;
