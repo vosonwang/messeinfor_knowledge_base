@@ -1,6 +1,5 @@
 {
   "base": {
-    "debug": true,
     "protocol": "http://",
     "Port": ":8300",
     "ImagePath": "upload/images/",

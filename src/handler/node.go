@@ -11,25 +11,22 @@ import (
 //func SwapNode(w http.ResponseWriter, r *http.Request) {
 //	vars := mux.Vars(r)
 //	id := vars["id"]
-//	if down := model.FindAlias(id); down == nil {
+//
+//	var Map map[string]string
+//
+//	if err := json.NewDecoder(r.Body).Decode(&Map); err != nil {
 //		w.WriteHeader(http.StatusInternalServerError)
-//		fmt.Fprint(w, "数据库报错，找不到文档！")
+//		fmt.Fprint(w, "无法解析节点")
 //	} else {
-//		var Map map[string]string
-//		if err := json.NewDecoder(r.Body).Decode(&Map); err != nil {
+//		if up := model.FindAlias(Map["id"]); up == nil {
 //			w.WriteHeader(http.StatusInternalServerError)
-//			fmt.Fprint(w, "无法解析节点")
+//			fmt.Fprint(w, "数据库报错，找不到文档！")
 //		} else {
-//			if up := model.FindAlias(Map["id"]); up == nil {
-//				w.WriteHeader(http.StatusInternalServerError)
-//				fmt.Fprint(w, "数据库报错，找不到文档！")
+//			if err := model.SwapNode(*down, *up); err {
+//				JsonResponse(w, "交换成功！")
 //			} else {
-//				if err := model.SwapNode(*down, *up); err {
-//					JsonResponse(w, "交换成功！")
-//				} else {
-//					w.WriteHeader(http.StatusInternalServerError)
-//					fmt.Fprint(w, "数据库报错，无法交换节点！")
-//				}
+//				w.WriteHeader(http.StatusInternalServerError)
+//				fmt.Fprint(w, "数据库报错，无法交换节点！")
 //			}
 //		}
 //	}

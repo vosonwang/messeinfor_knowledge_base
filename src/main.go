@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+
 	/*Router*/
 	r := mux.NewRouter()
 	adminRouter := mux.NewRouter().PathPrefix("/admin").Subrouter().StrictSlash(true)
@@ -69,7 +70,7 @@ func main() {
 	))
 
 	srv := &http.Server{
-		Addr:    conf.X.Base.Host+conf.X.Base.Port,
+		Addr:    conf.X.Base.Host + conf.X.Base.Port,
 		Handler: r,
 		// Good practice: enforce timeouts for servers you create!
 		ReadTimeout:    10 * time.Second,

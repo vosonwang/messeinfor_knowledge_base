@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"encoding/json"
 	"github.com/tidwall/gjson"
+	"flag"
 )
 
 type Base struct {
@@ -36,7 +37,10 @@ type Config struct {
 	Redis
 }
 
-var X Config
+var (
+	X     *Config
+	Debug = flag.Bool("debug", false, "-debug")
+)
 
 func init() {
 	byteConf, err := ioutil.ReadFile("src/conf/base.json")
@@ -54,7 +58,10 @@ func init() {
 	b := gjson.GetBytes(byteConf, "base")
 	json.Unmarshal([]byte(b.Raw), &base)
 
-	if base.Debug {
+	flag.Parse()
+
+
+	if *Debug {
 		if byteDev, err := ioutil.ReadFile("src/conf/dev.json"); err != nil {
 			fmt.Print(err)
 		} else {
@@ -85,6 +92,5 @@ func init() {
 		}
 	}
 
-	X = Config{base, pg, redis}
-
+	X = &Config{base, pg, redis}
 }
