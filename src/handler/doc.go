@@ -38,48 +38,6 @@ func FindDoc(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func FindOppDoc(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-
-	if lang, err := strconv.Atoi(r.Header.Get("id")); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, "参数不正确")
-	} else {
-		if point := model.FindDocByAlias(vars["id"], lang); err == nil {
-			JsonResponse(w, "找不到文档！")
-		} else {
-			JsonResponse(w, *point)
-		}
-	}
-
-}
-
-//func UpdateDoc(w http.ResponseWriter, r *http.Request) {
-//	vars := mux.Vars(r)
-//
-//	var (
-//		docAlias model.DocAlias
-//		err      error
-//	)
-//
-//	if docAlias.Id, err = uuid.FromString(vars["id"]); err != nil {
-//		w.WriteHeader(http.StatusInternalServerError)
-//		fmt.Fprint(w, "Id格式错误")
-//	}
-//
-//	if err := json.NewDecoder(r.Body).Decode(&docAlias); err != nil {
-//		w.WriteHeader(http.StatusInternalServerError)
-//		fmt.Fprint(w, "无法解析节点")
-//	} else {
-//		if point := model.UpdateDocAlias(docAlias); point == nil {
-//			w.WriteHeader(http.StatusInternalServerError)
-//			fmt.Fprint(w, "数据库：更新文档失败")
-//		} else {
-//			JsonResponse(w, *point)
-//		}
-//	}
-//}
-
 func DeleteDoc(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
@@ -95,4 +53,27 @@ func DeleteDoc(w http.ResponseWriter, r *http.Request) {
 			JsonResponse(w, "删除成功")
 		}
 	}
+}
+
+func FindDocByAlias(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	name := vars["name"]
+
+	if lang, err := strconv.Atoi(r.Header.Get("id")); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "参数不正确")
+	} else {
+		if p := model.FindAliasByName(name); p == nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, "找不到别名")
+		} else {
+			if point := model.FindDocByAlias(p.Id, lang); point == nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprint(w, "找不到文档")
+			} else {
+				JsonResponse(w, *point)
+			}
+		}
+	}
+
 }

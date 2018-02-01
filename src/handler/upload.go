@@ -28,7 +28,7 @@ func SaveImg(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, "拷贝图像失败！")
 		}
 
-		JsonResponse(w, conf.X.Base.Protocol+conf.X.Base.Host+"/"+a)
+		JsonResponse(w, conf.X.Base.Protocol+conf.X.Base.Ip+"/"+a)
 
 	}
 
@@ -79,7 +79,7 @@ func SaveFile(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "拷贝图像失败！")
 	} else {
-		JsonResponse(w, conf.X.Base.Protocol+conf.X.Base.Host+"/"+a)
+		JsonResponse(w, conf.X.Base.Protocol+conf.X.Base.Ip+"/"+a)
 	}
 
 }

@@ -17,7 +17,6 @@ func init() {
 	log.SetFlags(log.Ldate | log.Lmicroseconds | log.Llongfile)
 
 
-
 	/*Redis*/
 	client = redis.NewClient(&redis.Options{
 		Addr:      conf.X.Redis.Host+ conf.X.Redis.Port,

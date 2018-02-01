@@ -8,6 +8,7 @@ import (
 	"log"
 	"messeinfor.com/messeinfor_knowledge_base/src/conf"
 	"messeinfor.com/messeinfor_knowledge_base/src/handler"
+	"messeinfor.com/messeinfor_knowledge_base/src/model"
 )
 
 func main() {
@@ -26,6 +27,9 @@ func main() {
 
 	/*根据ID获取别名*/
 	r.HandleFunc("/alias/{id}", handler.FindAlias).Methods("GET")
+
+	/*通过Alias获取文档*/
+	r.HandleFunc("/mkb/docAlias/{name}", handler.FindDocByAlias).Methods("GET")
 
 	r.HandleFunc("/upload/images/{id}", handler.GetImg).Methods("GET")
 	r.HandleFunc("/upload/files/{id}", handler.GetFile).Methods("GET")
@@ -77,5 +81,6 @@ func main() {
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
+	model.FindDoc("8b1c3482-136a-40c1-b423-215ff84b5091")
 	log.Fatal(srv.ListenAndServe())
 }

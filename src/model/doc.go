@@ -47,7 +47,7 @@ func FindDoc(id string) (*Doc) {
 	return &doc
 }
 
-func FindDocByAlias(aliasId string, lang int) *Doc {
+func FindDocByAlias(aliasId uuid.UUID, lang int) *Doc {
 	var doc Doc
 
 	if err := db.First(&doc, "alias_id=? AND  lang =? ", aliasId, lang).Error; err != nil {

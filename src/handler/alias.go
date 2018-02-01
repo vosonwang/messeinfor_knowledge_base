@@ -8,20 +8,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func AddAlias(w http.ResponseWriter, r *http.Request) {
-	var alias model.Alias
-	if err := json.NewDecoder(r.Body).Decode(&alias); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, "无法解析节点")
-	} else {
-		if Point := model.NewAlias(alias); Point == nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "数据库:	无法添加文档")
-		} else {
-			JsonResponse(w, *Point)
-		}
-	}
-}
 
 func FindAlias(w http.ResponseWriter, r *http.Request)  {
 	vars := mux.Vars(r)

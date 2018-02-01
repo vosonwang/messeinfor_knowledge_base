@@ -9,9 +9,9 @@ import (
 )
 
 type Base struct {
-	Debug     bool
-	Host      string `json:"Host,omitempty"`
-	SecretKey string
+	Ip        string `json:"Ip,omitempty"`
+	SecretKey string `json:"SecretKey,omitempty"`
+	Host      string
 	Protocol  string
 	Port      string
 	ImagePath string
@@ -43,7 +43,7 @@ var (
 )
 
 func init() {
-	byteConf, err := ioutil.ReadFile("src/conf/base.json")
+	byteConf, err := ioutil.ReadFile("conf/base.json")
 
 	if err != nil {
 		fmt.Print(err)
@@ -60,13 +60,15 @@ func init() {
 
 	flag.Parse()
 
-
 	if *Debug {
-		if byteDev, err := ioutil.ReadFile("src/conf/dev.json"); err != nil {
+		if byteDev, err := ioutil.ReadFile("conf/dev.json"); err != nil {
 			fmt.Print(err)
 		} else {
-			d := gjson.GetBytes(byteDev, "Dev.Host")
-			json.Unmarshal([]byte(d.Raw), &base.Host)
+			d := gjson.GetBytes(byteDev, "Dev.Ip")
+			json.Unmarshal([]byte(d.Raw), &base.Ip)
+
+			s := gjson.GetBytes(byteDev, "Dev.SecretKey")
+			json.Unmarshal([]byte(s.Raw), &base.SecretKey)
 
 			r := gjson.GetBytes(byteDev, "Dev.Redis")
 			json.Unmarshal([]byte(r.Raw), &redis)
@@ -77,11 +79,14 @@ func init() {
 		}
 
 	} else {
-		if byteProd, err := ioutil.ReadFile("src/conf/prod.json"); err != nil {
+		if byteProd, err := ioutil.ReadFile("conf/prod.json"); err != nil {
 			fmt.Print(err)
 		} else {
-			d := gjson.GetBytes(byteProd, "Prod.Host")
-			json.Unmarshal([]byte(d.Raw), &base.Host)
+			d := gjson.GetBytes(byteProd, "Prod.Ip")
+			json.Unmarshal([]byte(d.Raw), &base.Ip)
+
+			s := gjson.GetBytes(byteProd, "Prod.SecretKey")
+			json.Unmarshal([]byte(s.Raw), &base.SecretKey)
 
 			r := gjson.GetBytes(byteProd, "Prod.Redis")
 			json.Unmarshal([]byte(r.Raw), &redis)

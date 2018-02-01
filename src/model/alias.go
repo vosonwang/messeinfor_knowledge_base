@@ -39,10 +39,18 @@ func NewAlias(alias Alias) *Alias {
 	return &alias
 }
 
-
 func FindAlias(id string) (*Alias) {
 	var a Alias
 	if err := db.First(&a, "id=?", id).Error; err != nil {
+		log.Print(err)
+		return nil
+	}
+	return &a
+}
+
+func FindAliasByName(name string) (*Alias) {
+	var a Alias
+	if err := db.First(&a, "name=?", name).Error; err != nil {
 		log.Print(err)
 		return nil
 	}
@@ -53,7 +61,7 @@ func FindAlias(id string) (*Alias) {
 func FindAliasByDesc(description string) *Aliases {
 
 	var aliases Aliases
-	if rows, err := db.Raw("select a.* from alias a LEFT JOIN doc d on a.id=d.alias_id WHERE a.deleted_at IS NULL AND d.id is NULL AND a.description LIKE ?","%"+description+"%").Rows(); err != nil {
+	if rows, err := db.Raw("select a.* from alias a LEFT JOIN doc d on a.id=d.alias_id WHERE a.deleted_at IS NULL AND d.id is NULL AND a.description LIKE ?", "%"+description+"%").Rows(); err != nil {
 		log.Print(err)
 		return nil
 	} else {
@@ -65,7 +73,6 @@ func FindAliasByDesc(description string) *Aliases {
 	}
 	return &aliases
 }
-
 
 //func UpdateDocAlias(docAlias DocAlias) (*DocAlias) {
 //	var (

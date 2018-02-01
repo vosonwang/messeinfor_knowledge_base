@@ -1,6 +1,6 @@
 {
   "Dev": {
-    "Host": "localhost",
+    "Ip": "localhost",
     "SecretKey":"messeinfor.com",
     "Redis": {
       "Host": "localhost",
