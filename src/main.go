@@ -6,9 +6,8 @@ import (
 	"net/http"
 	"time"
 	"log"
-	"messeinfor.com/messeinfor_knowledge_base/src/conf"
 	"messeinfor.com/messeinfor_knowledge_base/src/handler"
-	"messeinfor.com/messeinfor_knowledge_base/src/model"
+	"messeinfor.com/messeinfor_knowledge_base/src/conf"
 )
 
 func main() {
@@ -74,13 +73,12 @@ func main() {
 	))
 
 	srv := &http.Server{
-		Addr:    conf.X.Base.Host + conf.X.Base.Port,
+		Addr:    conf.X.Base.Addr,
 		Handler: r,
 		// Good practice: enforce timeouts for servers you create!
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-	model.FindDoc("8b1c3482-136a-40c1-b423-215ff84b5091")
 	log.Fatal(srv.ListenAndServe())
 }

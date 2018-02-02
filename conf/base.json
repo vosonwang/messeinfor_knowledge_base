@@ -1,9 +1,5 @@
 {
-  "base": {
-    "host": "localhost",
-    "protocol": "http://",
-    "Port": ":8300",
-    "ImagePath": "upload/images/",
-    "FilesPath": "upload/files/"
-  }
+  "Addr": "0.0.0.0:8300",
+  "ImagePath": "upload/images/",
+  "FilesPath": "upload/files/"
 }
