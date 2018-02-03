@@ -27,17 +27,17 @@ func main() {
 	/*根据ID获取别名*/
 	r.HandleFunc("/alias/{id}", handler.FindAlias).Methods("GET")
 
-	/*通过Alias获取文档*/
-	r.HandleFunc("/mkb/docAlias/{name}", handler.FindDocByAlias).Methods("GET")
+	/*通过Alias和lang获取文档*/
+	r.HandleFunc("/mkb/docAlias/{name}/{lang:[0-1]}", handler.FindDocByAlias).Methods("GET")
 
 	/*获取图片*/
 	r.HandleFunc("/upload/images/{name}", handler.GetImg).Methods("GET")
-	/*获取指定宽高的图片*/
+	//获取指定宽高的图片
 	r.HandleFunc("/upload/images/{name}/{w:[0-9]+}/{h:[0-9]+}", handler.GetSizedImg).Methods("GET")
-	/*获取指定压缩比的图片*/
+	//获取指定压缩比的图片
 	r.HandleFunc("/upload/images/{name}/{percent:0.[0-9]+}", handler.GetPerceptualImg).Methods("GET")
 
-	r.HandleFunc("/upload/files/{id}", handler.GetFile).Methods("GET")
+	r.HandleFunc("/upload/files/{name}", handler.GetFile).Methods("GET")
 
 	/*-----管理员权限路由：------*/
 
@@ -59,19 +59,20 @@ func main() {
 	adminRouter.HandleFunc("/titles", handler.FindTitle).Methods("POST")
 
 	/*根据语言获取所有文档*/
-	adminRouter.HandleFunc("/nodes/{lang:[0-9]+}", handler.GetAllNodes).Methods("GET")
-	/*添加文档*/
-	adminRouter.HandleFunc("/docs", handler.AddDoc).Methods("POST")
+	adminRouter.HandleFunc("/nodes/{lang:[0-1]}", handler.GetAllNodes).Methods("GET")
+	/*添加文档和更新文档共用*/
+	adminRouter.HandleFunc("/docs", handler.NewDoc).Methods("POST")
 	//删除文档
 	adminRouter.HandleFunc("/docs/{id}", handler.DeleteDoc).Methods("DELETE")
-	//更新文档
-	//adminRouter.HandleFunc("/docs/{id}", handler.UpdateDoc).Methods("PUT")
 
 	//交换节点
-	//adminRouter.HandleFunc("/nodes/{id}", handler.SwapNode).Methods("PATCH")
+	adminRouter.HandleFunc("/nodes/{down}/{up}", handler.SwapNode).Methods("PATCH")
 
+	/*上传文件*/
+	//上传图片
 	adminRouter.HandleFunc("/images", handler.SaveImg).Methods("POST")
-	adminRouter.HandleFunc("/files", handler.SaveFile).Methods("POST")
+	//上传文件
+	adminRouter.HandleFunc("/files/{name}", handler.SaveFile).Methods("POST")
 
 	r.PathPrefix("/admin").Handler(negroni.New(
 		negroni.HandlerFunc(ValidateToken),

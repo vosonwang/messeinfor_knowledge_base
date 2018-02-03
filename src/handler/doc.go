@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func AddDoc(w http.ResponseWriter, r *http.Request) {
+func NewDoc(w http.ResponseWriter, r *http.Request) {
 	var doc model.Doc
 	if err := json.NewDecoder(r.Body).Decode(&doc); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -59,20 +59,17 @@ func FindDocByAlias(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	name := vars["name"]
 
-	if lang, err := strconv.Atoi(r.Header.Get("id")); err != nil {
+	lang, _ := strconv.Atoi(vars["lang"])
+
+	if p := model.FindAliasByName(name); p == nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, "参数不正确")
+		fmt.Fprint(w, "找不到别名")
 	} else {
-		if p := model.FindAliasByName(name); p == nil {
+		if point := model.FindDocByAlias(p.Id, lang); point == nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "找不到别名")
+			fmt.Fprint(w, "找不到文档")
 		} else {
-			if point := model.FindDocByAlias(p.Id, lang); point == nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				fmt.Fprint(w, "找不到文档")
-			} else {
-				JsonResponse(w, *point)
-			}
+			JsonResponse(w, *point)
 		}
 	}
 

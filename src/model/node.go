@@ -31,22 +31,32 @@ func FindAllNodes(lang int) (*Nodes) {
 	return &nodes
 }
 
-//func SwapNode(down Alias, up Alias) bool {
-//
-//	tx := db.Begin()
-//
-//	if err := db.Exec("UPDATE alias SET node_key= ? WHERE id =?", up.NodeKey, down.Id).Error; err != nil {
-//		tx.Rollback()
-//		log.Print(err)
-//		return false
-//	}
-//
-//	if err := db.Exec("UPDATE alias SET node_key= ? WHERE id=?", down.NodeKey, up.Id).Error; err != nil {
-//		tx.Rollback()
-//		log.Print(err)
-//		return false
-//	}
-//
-//	tx.Commit()
-//	return true
-//}
+func SwapNode(down string, up string) bool {
+
+	var d, u Doc
+
+	err := db.Where("id = ?", down).Find(&d).Error
+
+	err = db.Where("id = ?", up).Find(&u).Error
+
+	if err != nil {
+		return false
+	}
+
+	d.Number, u.Number = u.Number, d.Number
+
+	tx := db.Begin()
+
+	err = db.Save(&d).Error
+
+	err = db.Save(&u).Error
+
+	if err != nil {
+		tx.Rollback()
+		log.Print(err)
+		return false
+	}
+
+	tx.Commit()
+	return true
+}

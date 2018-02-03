@@ -89,8 +89,11 @@ func GetPerceptualImg(w http.ResponseWriter, r *http.Request) {
 }
 
 func SaveFile(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	name := vars["name"]
+
 	//去除文件名中的空格，以便配合前端mavon能够正常显示链接
-	fileName := strings.Replace(r.Header.Get("id"), " ", "", -1)
+	fileName := strings.Replace(name, " ", "", -1)
 	a := conf.B.FilesPath + fileName
 
 	var f *os.File
@@ -127,8 +130,8 @@ func SaveFile(w http.ResponseWriter, r *http.Request) {
 
 func GetFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["id"]
-	if file, err := ioutil.ReadFile(conf.B.FilesPath + id); err != nil {
+	name := vars["name"]
+	if file, err := ioutil.ReadFile(conf.B.FilesPath + name); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "获取文件失败！")
 	} else {
