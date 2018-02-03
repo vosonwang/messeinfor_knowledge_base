@@ -1,8 +1,0 @@
-{
-  "base": {
-    "Protocol": "http://",
-    "Port": ":8300",
-    "ImagePath": "upload/images/",
-    "FilesPath": "upload/files/"
-  }
-}

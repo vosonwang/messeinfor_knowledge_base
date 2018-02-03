@@ -19,7 +19,7 @@ func init() {
 
 	/*Redis*/
 	client = redis.NewClient(&redis.Options{
-		Addr:      conf.X.Redis.Host+ conf.X.Redis.Port,
+		Addr:      conf.R.Host+ conf.R.Port,
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})

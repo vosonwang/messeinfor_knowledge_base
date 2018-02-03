@@ -30,7 +30,13 @@ func main() {
 	/*通过Alias获取文档*/
 	r.HandleFunc("/mkb/docAlias/{name}", handler.FindDocByAlias).Methods("GET")
 
-	r.HandleFunc("/upload/images/{id}", handler.GetImg).Methods("GET")
+	/*获取图片*/
+	r.HandleFunc("/upload/images/{name}", handler.GetImg).Methods("GET")
+	/*获取指定宽高的图片*/
+	r.HandleFunc("/upload/images/{name}/{w:[0-9]+}/{h:[0-9]+}", handler.GetSizedImg).Methods("GET")
+	/*获取指定压缩比的图片*/
+	r.HandleFunc("/upload/images/{name}/{percent:0.[0-9]+}", handler.GetPerceptualImg).Methods("GET")
+
 	r.HandleFunc("/upload/files/{id}", handler.GetFile).Methods("GET")
 
 	/*-----管理员权限路由：------*/
@@ -53,7 +59,7 @@ func main() {
 	adminRouter.HandleFunc("/titles", handler.FindTitle).Methods("POST")
 
 	/*根据语言获取所有文档*/
-	adminRouter.HandleFunc("/nodes/{lang}", handler.GetAllNodes).Methods("GET")
+	adminRouter.HandleFunc("/nodes/{lang:[0-9]+}", handler.GetAllNodes).Methods("GET")
 	/*添加文档*/
 	adminRouter.HandleFunc("/docs", handler.AddDoc).Methods("POST")
 	//删除文档
@@ -73,7 +79,7 @@ func main() {
 	))
 
 	srv := &http.Server{
-		Addr:    conf.X.Base.Addr,
+		Addr:    conf.B.Addr,
 		Handler: r,
 		// Good practice: enforce timeouts for servers you create!
 		ReadTimeout:    10 * time.Second,

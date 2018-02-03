@@ -1,8 +1,8 @@
 {
-  "SecretKey":"messeinfor.com",
   "Redis": {
     "Host": "localhost",
-    "Port": ":32768"
+    "Port": ":32768",
+    "SecretKey": "messeinfor.com"
   },
   "Pg": {
     "Host": "localhost",

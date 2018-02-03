@@ -12,10 +12,9 @@ type Base struct {
 	Addr      string
 	ImagePath string
 	FilesPath string
-	SecretKey string `json:"SecretKey,omitempty"`
 }
 
-type Pg struct {
+type Postgres struct {
 	Host     string
 	Port     int `json:"Port,int"`
 	User     string
@@ -24,18 +23,15 @@ type Pg struct {
 }
 
 type Redis struct {
-	Host string
-	Port string
-}
-
-type Config struct {
-	Base
-	Pg
-	Redis
+	Host      string
+	Port      string
+	SecretKey string
 }
 
 var (
-	X     *Config
+	B     Base
+	R     Redis
+	P     Postgres
 	Debug = flag.Bool("debug", false, "-debug")
 )
 
@@ -46,13 +42,7 @@ func init() {
 		fmt.Print(err)
 	}
 
-	var (
-		base  Base
-		redis Redis
-		pg    Pg
-	)
-
-	err = json.Unmarshal(byteConf, &base)
+	err = json.Unmarshal(byteConf, &B)
 
 	if err != nil {
 		fmt.Print(err)
@@ -65,14 +55,11 @@ func init() {
 			fmt.Print(err)
 		} else {
 
-			s := gjson.GetBytes(byteDev, "SecretKey")
-			json.Unmarshal([]byte(s.Raw), &base.SecretKey)
-
 			r := gjson.GetBytes(byteDev, "Redis")
-			json.Unmarshal([]byte(r.Raw), &redis)
+			json.Unmarshal([]byte(r.Raw), &R)
 
 			p := gjson.GetBytes(byteDev, "Pg")
-			json.Unmarshal([]byte(p.Raw), &pg)
+			json.Unmarshal([]byte(p.Raw), &P)
 
 		}
 
@@ -81,17 +68,12 @@ func init() {
 			fmt.Print(err)
 		} else {
 
-			s := gjson.GetBytes(byteProd, "SecretKey")
-			json.Unmarshal([]byte(s.Raw), &base.SecretKey)
-
 			r := gjson.GetBytes(byteProd, "Redis")
-			json.Unmarshal([]byte(r.Raw), &redis)
+			json.Unmarshal([]byte(r.Raw), &R)
 
 			p := gjson.GetBytes(byteProd, "Pg")
-			json.Unmarshal([]byte(p.Raw), &pg)
+			json.Unmarshal([]byte(p.Raw), &P)
 
 		}
 	}
-
-	X = &Config{base, pg, redis}
 }

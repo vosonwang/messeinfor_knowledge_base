@@ -11,11 +11,13 @@ import (
 	"github.com/gorilla/mux"
 	"fmt"
 	"log"
+	"github.com/disintegration/imaging"
+	"strconv"
 )
 
 func SaveImg(w http.ResponseWriter, r *http.Request) {
 
-	a := conf.X.Base.ImagePath + time.Now().Format("2006-01-02_15-04-05")
+	a := conf.B.ImagePath + time.Now().Format("2006-01-02_15-04-05")
 
 	if f, err := os.Create(a); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -36,8 +38,9 @@ func SaveImg(w http.ResponseWriter, r *http.Request) {
 
 func GetImg(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["id"]
-	if imgByte, err := ioutil.ReadFile(conf.X.Base.ImagePath + id); err != nil {
+	name := vars["name"]
+	if imgByte, err := ioutil.ReadFile(conf.B.ImagePath + name); err != nil {
+		log.Print(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "读取图像失败！")
 	} else {
@@ -47,10 +50,48 @@ func GetImg(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func GetSizedImg(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	name := vars["name"]
+
+	width, _ := strconv.Atoi(vars["w"])
+	height, _ := strconv.Atoi(vars["h"])
+
+	if src, err := imaging.Open(conf.B.ImagePath + name); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "读取图像失败！")
+	} else {
+		dstImage128 := imaging.Resize(src, width, height, imaging.Lanczos)
+
+		w.WriteHeader(http.StatusOK)
+		imaging.Encode(w, dstImage128, imaging.PNG)
+	}
+
+}
+
+func GetPerceptualImg(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	name := vars["name"]
+
+	percent, _ := strconv.ParseFloat(vars["percent"], 32)
+
+	if src, err := imaging.Open(conf.B.ImagePath + name); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "读取图像失败！")
+	} else {
+
+		dstImage128 := imaging.Resize(src, int(float64(src.Bounds().Dx())*percent), int(float64(src.Bounds().Dy())*percent), imaging.Lanczos)
+
+		w.WriteHeader(http.StatusOK)
+		imaging.Encode(w, dstImage128, imaging.PNG)
+	}
+
+}
+
 func SaveFile(w http.ResponseWriter, r *http.Request) {
 	//去除文件名中的空格，以便配合前端mavon能够正常显示链接
 	fileName := strings.Replace(r.Header.Get("id"), " ", "", -1)
-	a := conf.X.Base.FilesPath + fileName
+	a := conf.B.FilesPath + fileName
 
 	var f *os.File
 
@@ -87,7 +128,7 @@ func SaveFile(w http.ResponseWriter, r *http.Request) {
 func GetFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
-	if file, err := ioutil.ReadFile(conf.X.Base.FilesPath + id); err != nil {
+	if file, err := ioutil.ReadFile(conf.B.FilesPath + id); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "获取文件失败！")
 	} else {

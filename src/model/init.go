@@ -23,7 +23,7 @@ var db *gorm.DB
 
 func init() {
 
-	pg := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", conf.X.Pg.Host, conf.X.Pg.Port, conf.X.Pg.User, conf.X.Pg.Password, conf.X.Pg.Db)
+	pg := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", conf.P.Host, conf.P.Port, conf.P.User, conf.P.Password, conf.P.Db)
 	var err error
 
 	if db, err = gorm.Open("postgres", pg); err != nil {

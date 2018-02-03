@@ -23,7 +23,7 @@ type Token struct {
 func ValidateToken(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	token, err := request.ParseFromRequest(r, request.AuthorizationHeaderExtractor,
 		func(token *jwt.Token) (interface{}, error) {
-			return []byte(conf.X.Base.SecretKey), nil
+			return []byte(conf.R.SecretKey), nil
 		})
 
 	if err == nil {
@@ -68,7 +68,7 @@ func NewToken(w http.ResponseWriter, r *http.Request) {
 			"sub": user.Username,
 		})
 
-		tokenString, err := token.SignedString([]byte(conf.X.Base.SecretKey))
+		tokenString, err := token.SignedString([]byte(conf.R.SecretKey))
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintln(w, "Error while signing the token")
