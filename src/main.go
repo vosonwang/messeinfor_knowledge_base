@@ -8,6 +8,7 @@ import (
 	"log"
 	"messeinfor.com/messeinfor_knowledge_base/src/handler"
 	"messeinfor.com/messeinfor_knowledge_base/src/conf"
+	"messeinfor.com/messeinfor_knowledge_base/src/cache"
 )
 
 func main() {
@@ -17,9 +18,11 @@ func main() {
 	adminRouter := mux.NewRouter().PathPrefix("/admin").Subrouter().StrictSlash(true)
 
 	/*-----普通权限路由：------*/
+	/*搜索*/
+	r.HandleFunc("/search/{text}/{lang:[0-1]}", cache.SearchDoc).Methods("GET")
 
 	/*登录,请求token*/
-	r.HandleFunc("/tokens", NewToken).Methods("POST")
+	r.HandleFunc("/tokens", cache.NewToken).Methods("POST")
 
 	/*根据ID获取文档*/
 	r.HandleFunc("/docs/{id}", handler.FindDoc).Methods("GET")
@@ -56,7 +59,7 @@ func main() {
 	adminRouter.HandleFunc("/alias_titles/{id}", handler.FindAliasTitle).Methods("GET")
 
 	//根据语言查询和标题接近，并且未被占用的别名
-	adminRouter.HandleFunc("/titles", handler.FindTitle).Methods("POST")
+	adminRouter.HandleFunc("/titles/{value}/{lang:[0-1]}", handler.FindTitle).Methods("GET")
 
 	/*根据语言获取所有文档*/
 	adminRouter.HandleFunc("/nodes/{lang:[0-1]}", handler.GetAllNodes).Methods("GET")
@@ -75,7 +78,7 @@ func main() {
 	adminRouter.HandleFunc("/files/{name}", handler.SaveFile).Methods("POST")
 
 	r.PathPrefix("/admin").Handler(negroni.New(
-		negroni.HandlerFunc(ValidateToken),
+		negroni.HandlerFunc(cache.ValidateToken),
 		negroni.Wrap(adminRouter),
 	))
 

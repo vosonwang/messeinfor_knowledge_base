@@ -1,4 +1,4 @@
-package main
+package cache
 
 import (
 	"net/http"
@@ -73,7 +73,6 @@ func NewToken(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintln(w, "Error while signing the token")
 		}
-
 
 		response := Token{tokenString, (*p).Username, (*p).Id}
 		/*在redis上设置token为2小时过期*/

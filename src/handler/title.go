@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/satori/go.uuid"
 	"github.com/gorilla/mux"
+	"strconv"
 )
 
 func NewAliasTitle(w http.ResponseWriter, r *http.Request) {
@@ -63,16 +64,14 @@ func FindAliasTitle(w http.ResponseWriter, r *http.Request) {
 }
 
 func FindTitle(w http.ResponseWriter, r *http.Request) {
-	var title model.Title
-	if err := json.NewDecoder(r.Body).Decode(&title); err != nil {
+	vars := mux.Vars(r)
+
+	lang, _ := strconv.Atoi(vars["lang"])
+
+	if Point := model.FindTitles(vars["value"], lang); Point == nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, "无法解析节点")
+		fmt.Fprint(w, "数据库:	查找文档标题失败")
 	} else {
-		if Point := model.FindTitles(title); Point == nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "数据库:	查找文档标题失败")
-		} else {
-			JsonResponse(w, *Point)
-		}
+		JsonResponse(w, *Point)
 	}
 }

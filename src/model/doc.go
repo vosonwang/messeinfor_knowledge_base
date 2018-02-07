@@ -38,6 +38,23 @@ func NewDoc(doc Doc) *Doc {
 	return &doc
 }
 
+func GetAllDocId() *[]string {
+	var Ids []string
+
+	if rows, err := db.Raw("SELECT id FROM doc where deleted_at is null").Rows(); err != nil {
+		log.Print(err)
+		return nil
+	} else {
+		for rows.Next() {
+			var id string
+			rows.Scan(&id)
+			Ids = append(Ids, id)
+		}
+		return &Ids
+	}
+
+}
+
 func FindDoc(id string) (*Doc) {
 	var doc Doc
 	if err := db.First(&doc, "id=?", id).Error; err != nil {
@@ -54,27 +71,6 @@ func FindDocByAlias(aliasId uuid.UUID, lang int) *Doc {
 		log.Print(err)
 		return nil
 	}
-	return &doc
-}
-
-func FindDocByName(name string, lang int) (*Doc) {
-	var (
-		alias Alias
-		doc   Doc
-	)
-	//获取别名name和lang，根据name在alias表中查找alias_id
-	if err := db.First(&alias, "name=?", name).Error; err != nil {
-		log.Print(err)
-		return nil
-	}
-
-	//再根据alias_id和lang查出doc的id
-
-	if err := db.First(&doc, "alias_id=? AND  lang =? ", alias.Id, lang).Error; err != nil {
-		log.Print(err)
-		return nil
-	}
-
 	return &doc
 }
 

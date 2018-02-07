@@ -24,6 +24,8 @@ func NewDoc(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+
+
 func FindDoc(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
