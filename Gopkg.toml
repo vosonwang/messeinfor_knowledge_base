@@ -19,3 +19,8 @@
 #  name = "github.com/x/y"
 #  version = "2.4.0"
 
+ignored = ["github.com/disintegration/imaging"]
+
+[[constraint]]
+name = "github.com/olivere/elastic"
+version = "=6.1.3"

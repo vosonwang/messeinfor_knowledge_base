@@ -12,7 +12,7 @@ type Doc struct {
 	Lang     int       `json:"lang"`
 	Text     string    `json:"text"`
 	Title    string    `json:"title"`
-	AliasID  uuid.UUID `json:"alias_id"`
+	AliasID  uuid.UUID `json:"alias_id,omitempty"`
 	ParentId uuid.UUID `json:"parent_id"`
 	Creator  uuid.UUID `json:"creator"`
 	Updater  uuid.UUID `json:"updater"`
@@ -38,23 +38,6 @@ func NewDoc(doc Doc) *Doc {
 	return &doc
 }
 
-func GetAllDocId() *[]string {
-	var Ids []string
-
-	if rows, err := db.Raw("SELECT id FROM doc where deleted_at is null").Rows(); err != nil {
-		log.Print(err)
-		return nil
-	} else {
-		for rows.Next() {
-			var id string
-			rows.Scan(&id)
-			Ids = append(Ids, id)
-		}
-		return &Ids
-	}
-
-}
-
 func FindDoc(id string) (*Doc) {
 	var doc Doc
 	if err := db.First(&doc, "id=?", id).Error; err != nil {
@@ -62,6 +45,17 @@ func FindDoc(id string) (*Doc) {
 		return nil
 	}
 	return &doc
+}
+
+func FindAllDoc() *Docs {
+	var docs Docs
+	err := db.Find(&docs).Error
+	if err != nil {
+		log.Print(err)
+		return nil
+	}
+	return &docs
+
 }
 
 func FindDocByAlias(aliasId uuid.UUID, lang int) *Doc {

@@ -24,21 +24,6 @@ func (alias *Alias) BeforeCreate(scope *gorm.Scope) error {
 	return nil
 }
 
-func NewAlias(alias Alias) *Alias {
-	if db.NewRecord(alias) {
-		if err := db.Create(&alias).Error; err != nil {
-			log.Print(err)
-			return nil
-		}
-	} else {
-		if err := db.Save(&alias).Error; err != nil {
-			log.Print(err)
-			return nil
-		}
-	}
-	return &alias
-}
-
 func FindAlias(id string) (*Alias) {
 	var a Alias
 	if err := db.First(&a, "id=?", id).Error; err != nil {
@@ -73,31 +58,3 @@ func FindAliasByDesc(description string) *Aliases {
 	}
 	return &aliases
 }
-
-//func UpdateDocAlias(docAlias DocAlias) (*DocAlias) {
-//	var (
-//		doc   Doc
-//		alias Alias
-//	)
-//	doc = docAlias.Doc
-//
-//	tx := db.Begin()
-//
-//	if err := db.Model(&alias).Update("name", docAlias.Name).Error; err != nil {
-//		tx.Rollback()
-//		log.Print(err)
-//		return nil
-//	}
-//
-//	if err := db.Save(&doc).Error; err != nil {
-//		tx.Rollback()
-//		log.Print(err)
-//		return nil
-//	}
-//
-//	tx.Commit()
-//
-//	docAlias.Doc = doc
-//
-//	return &docAlias
-//}

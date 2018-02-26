@@ -8,7 +8,8 @@ import (
 	"log"
 	"messeinfor.com/messeinfor_knowledge_base/src/handler"
 	"messeinfor.com/messeinfor_knowledge_base/src/conf"
-	"messeinfor.com/messeinfor_knowledge_base/src/cache"
+	"messeinfor.com/messeinfor_knowledge_base/src/middleware"
+	"messeinfor.com/messeinfor_knowledge_base/src/search"
 )
 
 func main() {
@@ -19,10 +20,10 @@ func main() {
 
 	/*-----普通权限路由：------*/
 	/*搜索*/
-	r.HandleFunc("/search/{text}/{lang:[0-1]}", cache.SearchDoc).Methods("GET")
+	r.HandleFunc("/mkb/search/{words}", search.MultiMatch).Methods("GET")
 
 	/*登录,请求token*/
-	r.HandleFunc("/tokens", cache.NewToken).Methods("POST")
+	r.HandleFunc("/tokens", middleware.NewToken).Methods("POST")
 
 	/*根据ID获取文档*/
 	r.HandleFunc("/docs/{id}", handler.FindDoc).Methods("GET")
@@ -78,7 +79,7 @@ func main() {
 	adminRouter.HandleFunc("/files/{name}", handler.SaveFile).Methods("POST")
 
 	r.PathPrefix("/admin").Handler(negroni.New(
-		negroni.HandlerFunc(cache.ValidateToken),
+		negroni.HandlerFunc(middleware.ValidateToken),
 		negroni.Wrap(adminRouter),
 	))
 

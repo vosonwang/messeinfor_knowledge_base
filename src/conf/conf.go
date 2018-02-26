@@ -28,10 +28,17 @@ type Redis struct {
 	SecretKey string
 }
 
+type Es struct {
+	Url   string
+	Index string
+	Type  string
+}
+
 var (
 	B     Base
 	R     Redis
 	P     Postgres
+	E     Es
 	Debug = flag.Bool("debug", false, "-debug")
 )
 
@@ -50,30 +57,25 @@ func init() {
 
 	flag.Parse()
 
+	var bs []byte
+
 	if *Debug {
-		if byteDev, err := ioutil.ReadFile("conf/dev.json"); err != nil {
-			fmt.Print(err)
-		} else {
-
-			r := gjson.GetBytes(byteDev, "Redis")
-			json.Unmarshal([]byte(r.Raw), &R)
-
-			p := gjson.GetBytes(byteDev, "Pg")
-			json.Unmarshal([]byte(p.Raw), &P)
-
-		}
-
+		bs, err = ioutil.ReadFile("conf/dev.json")
 	} else {
-		if byteProd, err := ioutil.ReadFile("conf/prod.json"); err != nil {
-			fmt.Print(err)
-		} else {
-
-			r := gjson.GetBytes(byteProd, "Redis")
-			json.Unmarshal([]byte(r.Raw), &R)
-
-			p := gjson.GetBytes(byteProd, "Pg")
-			json.Unmarshal([]byte(p.Raw), &P)
-
-		}
+		bs, err = ioutil.ReadFile("conf/prod.json")
 	}
+
+	if err != nil {
+		fmt.Print(err)
+	}
+
+	r := gjson.GetBytes(bs, "Redis")
+	json.Unmarshal([]byte(r.Raw), &R)
+
+	p := gjson.GetBytes(bs, "Pg")
+	json.Unmarshal([]byte(p.Raw), &P)
+
+	e := gjson.GetBytes(bs, "es")
+	json.Unmarshal([]byte(e.Raw), &E)
+
 }
