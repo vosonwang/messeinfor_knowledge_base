@@ -1,14 +1,19 @@
 {
   "Redis": {
     "Host": "localhost",
-    "Port": ":32768",
+    "Port": ":6379",
     "SecretKey": "messeinfor.com"
   },
   "Pg": {
     "Host": "localhost",
-    "Port": 32769,
-    "User": "postgres",
-    "Password": "qwe123",
-    "Db": "messeinfor_knowledge"
+    "Port": 5432,
+    "User": "messeinfor",
+    "Password": "12345",
+    "Db": "mkb"
+  },
+  "es":{
+    "url":"http://127.0.0.1:9200",
+    "index":"k",
+    "type":"doc"
   }
 }
