@@ -50,6 +50,7 @@ func GetImg(w http.ResponseWriter, r *http.Request) {
 
 }
 
+/*按宽和高压缩图片*/
 func GetSizedImg(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	name := vars["name"]
@@ -69,6 +70,7 @@ func GetSizedImg(w http.ResponseWriter, r *http.Request) {
 
 }
 
+/*按百分比压缩图片*/
 func GetPerceptualImg(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	name := vars["name"]
