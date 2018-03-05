@@ -43,6 +43,7 @@ func SwapNode(down string, up string) bool {
 		return false
 	}
 
+	//数据库中number字段必须不能为unique
 	d.Number, u.Number = u.Number, d.Number
 
 	tx := db.Begin()

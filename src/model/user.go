@@ -6,7 +6,6 @@ type User struct {
 	Base
 	Username string `json:"username"`
 	Password string `json:"password"`
-	Docs     []Doc
 }
 
 func FindUser(user User) (*User) {

@@ -12,7 +12,7 @@ type Doc struct {
 	Lang     int       `json:"lang"`
 	Text     string    `json:"text"`
 	Title    string    `json:"title"`
-	AliasID  uuid.UUID `json:"alias_id"`
+	AliasID  uuid.UUID `json:"alias_id,omitempty"`
 	ParentId uuid.UUID `json:"parent_id"`
 	Creator  uuid.UUID `json:"creator"`
 	Updater  uuid.UUID `json:"updater"`
@@ -47,6 +47,17 @@ func FindDoc(id string) (*Doc) {
 	return &doc
 }
 
+func FindAllDoc() *Docs {
+	var docs Docs
+	err := db.Find(&docs).Error
+	if err != nil {
+		log.Print(err)
+		return nil
+	}
+	return &docs
+
+}
+
 func FindDocByAlias(aliasId uuid.UUID, lang int) *Doc {
 	var doc Doc
 
@@ -54,27 +65,6 @@ func FindDocByAlias(aliasId uuid.UUID, lang int) *Doc {
 		log.Print(err)
 		return nil
 	}
-	return &doc
-}
-
-func FindDocByName(name string, lang int) (*Doc) {
-	var (
-		alias Alias
-		doc   Doc
-	)
-	//获取别名name和lang，根据name在alias表中查找alias_id
-	if err := db.First(&alias, "name=?", name).Error; err != nil {
-		log.Print(err)
-		return nil
-	}
-
-	//再根据alias_id和lang查出doc的id
-
-	if err := db.First(&doc, "alias_id=? AND  lang =? ", alias.Id, lang).Error; err != nil {
-		log.Print(err)
-		return nil
-	}
-
 	return &doc
 }
 

@@ -1,4 +1,4 @@
-package main
+package middleware
 
 import (
 	"net/http"
@@ -29,7 +29,7 @@ func ValidateToken(w http.ResponseWriter, r *http.Request, next http.HandlerFunc
 	if err == nil {
 		claims := token.Claims.(jwt.MapClaims)
 		username := claims["sub"].(string)
-		_, err := client.Get(username).Result()
+		_, err := rs.Get(username).Result()
 		/*如果token合法，并且没有过期*/
 		if token.Valid {
 			if err == redis.Nil {
@@ -39,7 +39,7 @@ func ValidateToken(w http.ResponseWriter, r *http.Request, next http.HandlerFunc
 				panic(err)
 			} else {
 				/*如果在redis上未过期，则续命2小时*/
-				err = client.Set(username, "", 2*time.Hour).Err()
+				err = rs.Set(username, "", 2*time.Hour).Err()
 				if err != nil {
 					panic(err)
 				}
@@ -74,10 +74,9 @@ func NewToken(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintln(w, "Error while signing the token")
 		}
 
-
 		response := Token{tokenString, (*p).Username, (*p).Id}
 		/*在redis上设置token为2小时过期*/
-		err = client.Set(user.Username, "", 2*time.Hour).Err()
+		err = rs.Set(user.Username, "", 2*time.Hour).Err()
 		if err != nil {
 			panic(err)
 		}
