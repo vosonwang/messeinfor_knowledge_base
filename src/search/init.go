@@ -110,8 +110,9 @@ func init() {
 func importDoc() {
 	docs := model.FindAllDoc()
 	if docs == nil {
-		log.Print("获取不到文档")
+		panic("获取不到文档")
 	}
+
 	for _, value := range *docs {
 		NewDoc(&value)
 	}
