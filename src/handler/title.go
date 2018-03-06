@@ -8,6 +8,7 @@ import (
 	"github.com/satori/go.uuid"
 	"github.com/gorilla/mux"
 	"strconv"
+	"messeinfor.com/messeinfor_knowledge_base/src/util"
 )
 
 func NewAliasTitle(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +21,7 @@ func NewAliasTitle(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "数据库:	无法添加别名记录")
 		} else {
-			JsonResponse(w, *Point)
+			util.JsonResponse(w, *Point)
 		}
 	}
 }
@@ -30,7 +31,7 @@ func FindAllAliasTitle(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "获取别名列表失败")
 	} else {
-		JsonResponse(w, *p)
+		util.JsonResponse(w, *p)
 	}
 }
 
@@ -42,7 +43,7 @@ func DeleteAliasTitle(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "解析参数失败")
 	} else {
 		if model.DeleteAliasTitle(id) {
-			JsonResponse(w, true)
+			util.JsonResponse(w, true)
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "删除别名失败")
@@ -58,7 +59,7 @@ func FindAliasTitle(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "获取别名失败")
 	} else {
-		JsonResponse(w, &p)
+		util.JsonResponse(w, &p)
 
 	}
 }
@@ -72,6 +73,6 @@ func FindTitle(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "数据库:	查找文档标题失败")
 	} else {
-		JsonResponse(w, *Point)
+		util.JsonResponse(w, *Point)
 	}
 }

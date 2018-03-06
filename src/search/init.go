@@ -7,17 +7,32 @@ import (
 	"messeinfor.com/messeinfor_knowledge_base/src/model"
 	"log"
 	"messeinfor.com/messeinfor_knowledge_base/src/conf"
+	"fmt"
 )
 
-// Starting with elastic.v5, you must pass a context to execute each service
+var client *elastic.Client
 
-var (
-	ctx context.Context
-	es  *elastic.Client
-)
 
-const mapping = `
-{
+func init() {
+	var err error
+
+	client, err = elastic.NewClient(
+		elastic.SetURL(conf.E.Url),
+		elastic.SetSniff(false)) //停止嗅探，否则会报elastic node not found
+	if err != nil {
+		log.Print(conf.E.Url)
+		panic(err)
+	}
+
+	// Use the IndexExists service to check if a specified index exists.
+	// Starting with elastic.v5, you must pass a context to execute each service
+	exists, err := client.IndexExists(conf.E.Index).Do(context.Background())
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+	if !exists {
+		mapping := `{
 	"settings":{
 		"number_of_shards": 1,
 		"number_of_replicas": 0
@@ -75,28 +90,8 @@ const mapping = `
 	}
 }`
 
-func init() {
-	ctx = context.TODO()
-	var err error
-
-
-	es, err = elastic.NewClient(
-		elastic.SetURL(conf.E.Url),
-		elastic.SetSniff(false)) //停止嗅探，否则会报elastic node not found
-	if err != nil {
-		log.Print(conf.E.Url)
-		panic(err)
-	}
-
-	// Use the IndexExists service to check if a specified index exists.
-	exists, err := es.IndexExists(conf.E.Index).Do(ctx)
-	if err != nil {
-		// Handle error
-		panic(err)
-	}
-	if !exists {
 		// Create a new index.
-		createIndex, err := es.CreateIndex(conf.E.Index).BodyString(mapping).Do(ctx)
+		createIndex, err := client.CreateIndex(conf.E.Index).BodyString(mapping).Do(context.Background())
 		if err != nil {
 			// Handle error
 			panic(err)
@@ -105,27 +100,35 @@ func init() {
 			// Not acknowledged
 			panic(err)
 		}
+
 		importDoc()
 	}
 
 }
 
-/*向ES中导入文档*/
+/*向ES中导入所有文档*/
 func importDoc() {
 	docs := model.FindAllDoc()
 	if docs == nil {
 		log.Print("获取不到文档")
 	}
 	for _, value := range *docs {
-		AddDoc(&value)
+		NewDoc(&value)
 	}
 
 	var err error
 
 	// Flush to make sure the documents got written.
-	_, err = es.Flush().Index(conf.E.Index).Do(ctx)
+	_, err = client.Flush().Index(conf.E.Index).Do(context.Background())
 	if err != nil {
 		panic(err)
 	}
+
+	count, err := client.Count(conf.E.Index).Do(context.TODO())
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("\n Elastic:共索引 %d 个文档 \n",count)
 
 }

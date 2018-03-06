@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"messeinfor.com/messeinfor_knowledge_base/src/model"
 	"github.com/gorilla/mux"
+	"messeinfor.com/messeinfor_knowledge_base/src/util"
 )
 
 
@@ -18,7 +19,7 @@ func FindAlias(w http.ResponseWriter, r *http.Request)  {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "找不到文档！")
 	} else {
-		JsonResponse(w, *point)
+		util.JsonResponse(w, *point)
 	}
 }
 
@@ -34,7 +35,7 @@ func FindAliasByDesc(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "数据库:	无法添加文档")
 		} else {
-			JsonResponse(w, *Point)
+			util.JsonResponse(w, *Point)
 		}
 	}
 }
