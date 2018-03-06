@@ -9,9 +9,9 @@ import (
 	"github.com/go-redis/redis"
 	"messeinfor.com/messeinfor_knowledge_base/src/model"
 	"messeinfor.com/messeinfor_knowledge_base/src/conf"
-	"messeinfor.com/messeinfor_knowledge_base/src/handler"
 	"github.com/satori/go.uuid"
 	"encoding/json"
+	"messeinfor.com/messeinfor_knowledge_base/src/util"
 )
 
 type Token struct {
@@ -29,7 +29,7 @@ func ValidateToken(w http.ResponseWriter, r *http.Request, next http.HandlerFunc
 	if err == nil {
 		claims := token.Claims.(jwt.MapClaims)
 		username := claims["sub"].(string)
-		_, err := rs.Get(username).Result()
+		_, err := client.Get(username).Result()
 		/*如果token合法，并且没有过期*/
 		if token.Valid {
 			if err == redis.Nil {
@@ -39,7 +39,7 @@ func ValidateToken(w http.ResponseWriter, r *http.Request, next http.HandlerFunc
 				panic(err)
 			} else {
 				/*如果在redis上未过期，则续命2小时*/
-				err = rs.Set(username, "", 2*time.Hour).Err()
+				err = client.Set(username, "", 2*time.Hour).Err()
 				if err != nil {
 					panic(err)
 				}
@@ -76,14 +76,14 @@ func NewToken(w http.ResponseWriter, r *http.Request) {
 
 		response := Token{tokenString, (*p).Username, (*p).Id}
 		/*在redis上设置token为2小时过期*/
-		err = rs.Set(user.Username, "", 2*time.Hour).Err()
+		err = client.Set(user.Username, "", 2*time.Hour).Err()
 		if err != nil {
 			panic(err)
 		}
-		handler.JsonResponse(w, response)
+		util.JsonResponse(w, response)
 
 	} else {
-		handler.JsonResponse(w, "用户名密码错误！")
+		util.JsonResponse(w, "用户名密码错误！")
 	}
 
 }

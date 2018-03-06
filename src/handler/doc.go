@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"encoding/json"
 	"strconv"
+	"messeinfor.com/messeinfor_knowledge_base/src/util"
+	"messeinfor.com/messeinfor_knowledge_base/src/search"
 )
 
 func NewDoc(w http.ResponseWriter, r *http.Request) {
@@ -15,16 +17,15 @@ func NewDoc(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "无法解析节点")
 	} else {
-		if p := model.NewDoc(doc); p != nil {
-			JsonResponse(w, *p)
+		if model.NewDoc(&doc) {
+			search.NewDoc(&doc)
+			util.JsonResponse(w, doc)
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "数据库:	无法添加文档")
 		}
 	}
 }
-
-
 
 func FindDoc(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -35,7 +36,7 @@ func FindDoc(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "找不到文档！")
 	} else {
-		JsonResponse(w, *point)
+		util.JsonResponse(w, *point)
 	}
 
 }
@@ -48,11 +49,12 @@ func DeleteDoc(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "数据库：找不到文档！")
 	} else {
-		if model.DeleteDoc(*point) == false {
+		if model.DeleteDoc(*point) {
+			search.DeleteDoc(id)
+			util.JsonResponse(w, "删除成功")
+		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "数据库：无法删除！")
-		} else {
-			JsonResponse(w, "删除成功")
 		}
 	}
 }
@@ -71,7 +73,7 @@ func FindDocByAlias(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "找不到文档")
 		} else {
-			JsonResponse(w, *point)
+			util.JsonResponse(w, *point)
 		}
 	}
 

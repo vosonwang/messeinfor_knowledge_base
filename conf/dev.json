@@ -8,12 +8,12 @@
     "Host": "localhost",
     "Port": 5432,
     "User": "messeinfor",
-    "Password": "12345",
+    "Password": "messeinfor080124",
     "Db": "mkb"
   },
   "es":{
     "url":"http://127.0.0.1:9200",
-    "index":"k",
+    "index":"e",
     "type":"doc"
   }
 }

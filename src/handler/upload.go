@@ -13,6 +13,7 @@ import (
 	"log"
 	"github.com/disintegration/imaging"
 	"strconv"
+	"messeinfor.com/messeinfor_knowledge_base/src/util"
 )
 
 func SaveImg(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +31,7 @@ func SaveImg(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, "拷贝图像失败！")
 		}
 
-		JsonResponse(w, "/"+a)
+		util.JsonResponse(w, "/"+a)
 
 	}
 
@@ -125,7 +126,7 @@ func SaveFile(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "拷贝图像失败！")
 	} else {
-		JsonResponse(w, "/"+a)
+		util.JsonResponse(w, "/"+a)
 	}
 
 }

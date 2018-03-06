@@ -23,19 +23,21 @@ func (doc *Doc) BeforeCreate(scope *gorm.Scope) error {
 	return nil
 }
 
-func NewDoc(doc Doc) *Doc {
+func NewDoc(doc *Doc) bool {
 	if db.NewRecord(doc) {
 		if err := db.Create(&doc).Error; err != nil {
 			log.Print(err)
-			return nil
+			return false
 		}
+
 	} else {
 		if err := db.Save(&doc).Error; err != nil {
 			log.Print(err)
-			return nil
+			return false
 		}
+
 	}
-	return &doc
+	return true
 }
 
 func FindDoc(id string) (*Doc) {
