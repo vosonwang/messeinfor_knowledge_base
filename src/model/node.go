@@ -1,21 +1,8 @@
 package model
 
 import (
-	"github.com/satori/go.uuid"
 	"log"
 )
-
-type Node struct {
-	//一定要是Base，而不能替换成ID，不然就没法利用deleted_at
-	Base
-	AliasID  uuid.UUID `json:"alias_id"`
-	Number   int       `json:"number" gorm:"AUTO_INCREMENT;default:0"`
-	Lang     int       `json:"lang"`
-	Title    string    `json:"title"`
-	ParentId uuid.UUID `json:"parent_id"`
-}
-
-type Nodes []Node
 
 func (Node) TableName() string {
 	return "doc"

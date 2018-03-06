@@ -6,19 +6,6 @@ import (
 	"github.com/satori/go.uuid"
 )
 
-/*别名表*/
-type Alias struct {
-	Base
-	Number      int       `json:"number" gorm:"AUTO_INCREMENT;default:0"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	ParentId    uuid.UUID `json:"parent_id"`
-}
-
-type Aliases []Alias
-
-type Docs []Doc
-
 func (alias *Alias) BeforeCreate(scope *gorm.Scope) error {
 	scope.SetColumn("ID", uuid.NewV4())
 	return nil

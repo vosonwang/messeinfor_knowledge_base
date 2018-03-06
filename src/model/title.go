@@ -5,24 +5,6 @@ import (
 	"github.com/satori/go.uuid"
 )
 
-type Title struct {
-	Base
-	Title string `json:"title"`
-	Lang  int    `json:"lang"`
-}
-
-type Titles []Title
-
-type AliasTitle struct {
-	Alias
-	DocCn   uuid.UUID `json:"doc_cn" `
-	TitleCn string    `json:"title_cn" `
-	DocEn   uuid.UUID `json:"doc_en" `
-	TitleEn string    `json:"title_en" `
-}
-
-type AliasTitles []AliasTitle
-
 func NewAliasTitle(aliasTitle AliasTitle) *AliasTitle {
 
 	if db.NewRecord(aliasTitle) {
@@ -115,7 +97,7 @@ func FindAliasTitle(id string) *AliasTitle {
 }
 
 //根据语言查询和标题接近，并且未被占用的别名
-func FindTitles(value string,lang int) *Titles {
+func FindTitles(value string, lang int) *Titles {
 	var titles Titles
 	if rows, err := db.Raw("SELECT d1.id, d1.title FROM doc d1 WHERE d1.deleted_at IS NULL AND d1.lang = ? AND d1.title LIKE ? AND (d1.alias_id IS NULL OR d1.alias_id = '00000000-0000-0000-0000-000000000000')", lang, "%"+value+"%").Rows(); err != nil {
 		log.Print(err)

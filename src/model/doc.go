@@ -6,17 +6,6 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type Doc struct {
-	Base
-	Number   int       `json:"number" gorm:"AUTO_INCREMENT;default:0"`
-	Lang     int       `json:"lang"`
-	Text     string    `json:"text"`
-	Title    string    `json:"title"`
-	AliasID  uuid.UUID `json:"alias_id,omitempty"`
-	ParentId uuid.UUID `json:"parent_id"`
-	Creator  uuid.UUID `json:"creator"`
-	Updater  uuid.UUID `json:"updater"`
-}
 
 func (doc *Doc) BeforeCreate(scope *gorm.Scope) error {
 	scope.SetColumn("ID", uuid.NewV4())
